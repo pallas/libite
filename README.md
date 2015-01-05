@@ -22,6 +22,8 @@ as well as the following utility templates
  * do_not_copy --- Equivalent to boost::noncopyable.
  * intrusive_link --- Shared pointer wrapper, which asserts that links are
    removed from a container prior to object destruction.
+ * singleton --- Singleton template, instantiates before main.
+ * try --- Converts traditional error reporting to exceptions.
 
 A small test suite is available and can be run via
 
