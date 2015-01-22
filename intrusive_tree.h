@@ -60,14 +60,16 @@ public:
     while (true) {
       assert(n);
 
+      // case 1
       T* p = parent_(n);
       if (!p) {
         assert(is_red(n));
         if (is_red(n))
-          toggle(n);
+          toggle(n); // set BLACK
         break;
       }
 
+      // case 2
       if (is_black(p))
         break;
 
@@ -75,6 +77,7 @@ public:
       if (!g)
         break;
 
+      // case 4
       T* u = peer(p);
       if (!u || is_black(u)) {
         if (is_right(n) && is_left(p)) {
@@ -89,7 +92,7 @@ public:
           assert(is_red(n));
 
           using std::swap;
-          swap(n,p);
+          swap(n,p); // move to left
         } else if (is_left(n) && is_right(p)) {
           assert(is_black(g));
           assert(is_red(p));
@@ -102,9 +105,10 @@ public:
           assert(is_red(n));
 
           using std::swap;
-          swap(n,p);
+          swap(n,p); // move to right
         }
 
+        // case 5
         assert(!is_left(n) || is_left(p));
         assert(!is_right(n) || is_right(p));
 
@@ -117,8 +121,8 @@ public:
         else // if (is_right(n))
           rotate_left(g);
 
-        toggle(g);
-        toggle(p);
+        toggle(g); // set RED
+        toggle(p); // set BLACK
 
         assert(is_red(g));
         assert(is_black(p));
@@ -127,15 +131,16 @@ public:
         break;
       }
 
+      // case 3
       assert(is_black(g));
       assert(is_red(p));
       assert(is_red(u));
 
-      toggle(g);
-      toggle(p);
-      toggle(u);
+      toggle(g); // make RED
+      toggle(p); // make BLACK
+      toggle(u); // make BLACK
 
-      n = g;
+      n = g; // to case 1
     }
 
     assert(is_member(t));
@@ -152,6 +157,7 @@ public:
     assert(is_bound(t));
     assert(is_member(t));
 
+    // swap with previous or next leaf
     static int i = 0;
     if (left_(t) && right_(t))
       node_swap(t, (++i % 2) ? rightest_(left_(t)): leftest_(right_(t)));
@@ -162,32 +168,38 @@ public:
          : right_(t) ? take_right(t)
          : NULL;
 
+    // swap with child
     if (c)
       replace(t, c);
 
+    // trivial case
     if (is_red(t)) {
       if (!c)
         unlink(t);
       return t;
     }
 
-    toggle(t);
+    toggle(t); // set BLACK
 
     if (is_red(c)) {
       assert(c);
-      toggle(c);
+      toggle(c); // set BLACK
       return t;
     }
 
+    // t acts as null leaf
+
+    // !case 1
     T* n = c ? c : t;
     while (!is_root(n)) {
       T* p = parent_(n);
       T* s = peer(n);
 
+      // case 2
       if (is_red(s)) {
         assert(is_black(p));
-        toggle(p);
-        toggle(s);
+        toggle(p); // set RED
+        toggle(s); // set BLACK
 
         if (is_left(n))
           rotate_left(p);
@@ -201,59 +213,63 @@ public:
       T* sl = s ? left_(s) : NULL;
       T* sr = s ? right_(s) : NULL;
 
+      // case 4
       if (is_red(p) && is_black(s) && is_black(sl) && is_black(sr)) {
         assert(s);
-        toggle(s);
-        toggle(p);
+        toggle(s); // set RED
+        toggle(p); // set BLACK
         break;
       }
 
+      // case 5
       if (is_red(p) || is_red(sl) || is_red(sr)) {
         assert(is_black(s));
         if (is_left(n) && is_black(sr)) {
           assert(is_red(sl));
-          toggle(s);
-          toggle(sl);
+          toggle(s); // set RED
+          toggle(sl); // set BLACK
           rotate_right(s);
         } else if (is_right(n) && is_black(sl)) {
           assert(is_red(sr));
-          toggle(s);
-          toggle(sr);
+          toggle(s); // set RED
+          toggle(sr); // set BLACK
           rotate_left(s);
         }
 
+        // case 6
         p = parent_(n);
         s = peer(n);
         sl = left_(s);
         sr = right_(s);
 
         if (is_red(p)) {
-          toggle(p);
+          toggle(p); // set BLACK
           if (is_black(s))
-            toggle(s);
+            toggle(s); // set RED
         }
 
         if (is_left(n)) {
           if (is_red(sr))
-            toggle(sr);
+            toggle(sr); // set BLACK
           rotate_left(p);
         } else /* if (is_right(n)) */ {
           if (is_red(sl))
-            toggle(sl);
+            toggle(sl); // set BLACK
           rotate_right(p);
         }
 
         break;
       }
 
+      // case 3
       assert(is_black(p));
       assert(is_black(s));
       assert(is_black(sl));
       assert(is_black(sr));
 
       assert(s);
-      toggle(s);
-      n = p;
+      toggle(s); // set RED
+      n = p; // move to parent
     }
 
     if (!c)
