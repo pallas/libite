@@ -60,9 +60,25 @@ main(int, char*[]) {
 
   all.merge(even).merge(odd);
 
+  node* y = new node(lrand48() % n);
+  tree.graft(y);
+  all.insert(y);
+  queue.enqueue(y);
+  stack.push(y);
+
+  {{
+    node* z = new node(y->value);
+    tree.transplant(y, z);
+    assert(z->bound());
+    if (!y->bound())
+      delete y;
+  }}
+
   std::cout << "tree";
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     std::cout << ' ' << i->value;
+    if (i == y)
+        std::cout << '*';
   }
   std::cout << std::endl;
 
@@ -71,6 +87,8 @@ main(int, char*[]) {
     node* x = all.remove();
     assert(x->value == i->value);
     std::cout << ' ' << x->value;
+    if (x == y)
+        std::cout << '*';
 
     if (!x->bound())
       delete x;
@@ -81,9 +99,12 @@ main(int, char*[]) {
   while (!queue.empty()) {
     node* x = queue.dequeue();
     std::cout << ' ' << tree.find(x->value)->value;
+    if (x == y)
+        std::cout << '*';
 
-    assert(tree.is_member(x));
-    tree.prune(x);
+    assert(tree.is_member(x) || x == y);
+    if (x != y)
+      tree.prune(x);
 
     if (!x->bound())
       delete x;
@@ -94,11 +115,19 @@ main(int, char*[]) {
   while (!stack.empty()) {
     node* x = stack.pop();
     std::cout << ' ' << x->value;
+    if (x == y)
+        std::cout << '*';
 
     if (!x->bound())
       delete x;
   }
   std::cout << std::endl;
+
+  {{
+    node* z = tree.prune(tree.root());
+    if (!z->bound())
+      delete z;
+  }}
 
   return EXIT_SUCCESS;
 }
