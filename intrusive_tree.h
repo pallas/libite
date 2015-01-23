@@ -281,6 +281,42 @@ public:
     return t;
   }
 
+  T* transplant(T* o, T* n) {
+    assert(valid());
+    assert(is_bound(o));
+    assert(is_member(o));
+    assert(!is_bound(n));
+    assert(!is_member(n));
+
+    assert(!(o->*key < n->*key));
+    assert(!(n->*key < o->*key));
+
+    assert(is_red(n));
+    if (is_black(o)) {
+      toggle(o); // set RED
+      toggle(n); // set BLACK
+    }
+
+    if (left_(o))
+      link_left(n, take_left(o));
+
+    if (right_(o))
+      link_right(n, take_right(o));
+
+    assert(!left_(o));
+    assert(!right_(o));
+
+    replace(o, n);
+
+    assert(!is_member(o));
+    assert(!is_bound(o));
+    assert(is_member(n));
+    assert(is_bound(n));
+    assert(valid());
+
+    return o;
+  }
+
   void swap(intrusive_tree & that) {
     using std::swap;
     swap(this->root_, that.root_);
