@@ -60,6 +60,12 @@ main(int, char*[]) {
 
   all.merge(even).merge(odd);
 
+  std::cout << "tree";
+  for (node* i = tree.min() ; i ; i = tree.next(i)) {
+    std::cout << ' ' << i->value;
+  }
+  std::cout << std::endl;
+
   std::cout << "order";
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     node* x = all.remove();
