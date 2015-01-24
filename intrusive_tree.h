@@ -416,31 +416,31 @@ public:
 private:
   T * root_;
 
-  bool is_red(const T* n) const { return n && (n->*link).red(); }
-  bool is_black(const T* n) const { return !n || (n->*link).black(); }
-  bool is_bound(const T* n) const { assert(n); return (n->*link).bound(); }
+  static bool is_red(const T* n) { return n && (n->*link).red(); }
+  static bool is_black(const T* n) { return !n || (n->*link).black(); }
+  static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
 
-  void toggle(T* n) const { assert(n); (n->*link).toggle(); }
+  static void toggle(T* n) { assert(n); (n->*link).toggle(); }
 
-  T* parent_(const T* n) const { assert(n); return (n->*link).up(); }
-  T* left_(const T* n) const { assert(n); return (n->*link).l.p; }
-  T* right_(const T* n) const { assert(n); return (n->*link).r.p; }
+  static T* parent_(const T* n) { assert(n); return (n->*link).up(); }
+  static T* left_(const T* n) { assert(n); return (n->*link).l.p; }
+  static T* right_(const T* n) { assert(n); return (n->*link).r.p; }
 
-  T* eldest_(const T* n) const {
+  static T* eldest_(const T* n) {
     assert(n);
     while (const T* c = parent_(n))
       n = c;
     return const_cast<T*>(n);
   }
 
-  T* leftest_(const T* n) const {
+  static T* leftest_(const T* n) {
     assert(n);
     while (const T* c = left_(n))
       n = c;
     return const_cast<T*>(n);
   }
 
-  T* rightest_(const T* n) const {
+  static T* rightest_(const T* n) {
     assert(n);
     while (const T* c = right_(n))
       n = c;
