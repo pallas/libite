@@ -326,6 +326,28 @@ public:
     return o;
   }
 
+  intrusive_tree & inosculate(intrusive_tree & that) {
+    assert(this != &that);
+
+    T* i = that.root_;
+    while (i) {
+      if (T* l = left_(i))
+        i = l;
+      else if (T* r = right_(i))
+        i = r;
+      else {
+        T* p = parent_(i);
+        that.unlink(i);
+        this->graft(i);
+        i = p;
+      }
+    }
+
+    assert(that.empty());
+
+    return *this;
+  }
+
   void swap(intrusive_tree & that) {
     using std::swap;
     swap(this->root_, that.root_);
