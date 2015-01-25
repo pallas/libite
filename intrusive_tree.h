@@ -179,7 +179,7 @@ public:
       return t;
     }
 
-    toggle(t); // set BLACK
+    toggle(t); // set RED
 
     if (is_red(c)) {
       assert(c);
