@@ -39,30 +39,35 @@ main(int, char*[]) {
   srand48(getpid());
 
   node::tree_t tree;
-  node::order_t even, odd, all;
+  node::order_t order;
   node::queue_t queue;
   node::stack_t stack;
 
   static const unsigned n = 16;
-  for (unsigned i = 0 ; i < n ; ++i) {
-    node* x = new node(lrand48() % n);
 
-    tree.graft(x);
+  {{
+    node::order_t even, odd;
 
-    switch (x->value % 2) {
-    case 0: even.insert(x); break;
-    case 1: odd.insert(x); break;
+    for (unsigned i = 0 ; i < n ; ++i) {
+      node* x = new node(lrand48() % n);
+
+      tree.graft(x);
+
+      switch (x->value % 2) {
+      case 0: even.insert(x); break;
+      case 1: odd.insert(x); break;
+      }
+
+      queue.enqueue(x);
+      stack.push(x);
     }
 
-    queue.enqueue(x);
-    stack.push(x);
-  }
-
-  all.merge(even).merge(odd);
+    order.merge(even).merge(odd);
+  }}
 
   node* y = new node(lrand48() % n);
   tree.graft(y);
-  all.insert(y);
+  order.insert(y);
   queue.enqueue(y);
   stack.push(y);
 
@@ -84,7 +89,7 @@ main(int, char*[]) {
 
   std::cout << "order";
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
-    node* x = all.remove();
+    node* x = order.remove();
     assert(x->value == i->value);
     std::cout << ' ' << x->value;
     if (x == y)
