@@ -168,22 +168,31 @@ public:
          : right_(t) ? take_right(t)
          : NULL;
 
+
+    // trivial case
+    if (is_red(t)) {
+      if (c)
+        replace(t, c);
+      else
+        unlink(t);
+
+      assert(!is_bound(t));
+      assert(valid());
+
+      return t;
+    }
+
     // swap with child
     if (c)
       replace(t, c);
 
-    // trivial case
-    if (is_red(t)) {
-      if (!c)
-        unlink(t);
-      return t;
-    }
-
-    toggle(t); // set RED
-
     if (is_red(c)) {
       assert(c);
       toggle(c); // set BLACK
+
+      assert(!is_bound(t));
+      assert(valid());
+
       return t;
     }
 
@@ -480,10 +489,7 @@ private:
     else // if (is_right(n))
       link_right(parent_(n), NULL);
 
-    bool b = is_black(n);
     (n->*link).p.p = NULL;
-    if (b)
-      toggle(n);
   }
 
   void link_root(T* n) {
