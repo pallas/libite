@@ -46,20 +46,31 @@ main(int, char*[]) {
   static const unsigned n = 16;
 
   {{
-    node::order_t even, odd;
+    node::tree_t even, odd;
 
     for (unsigned i = 0 ; i < n ; ++i) {
       node* x = new node(lrand48() % n);
 
-      tree.graft(x);
-
       switch (x->value % 2) {
-      case 0: even.insert(x); break;
-      case 1: odd.insert(x); break;
+      case 0: even.graft(x); break;
+      case 1: odd.graft(x); break;
       }
 
       queue.enqueue(x);
       stack.push(x);
+    }
+
+    tree.inosculate(even).inosculate(odd);
+  }}
+
+  {{
+    node::order_t even, odd;
+
+    for (node* x = tree.min() ; x ; x = tree.next(x)) {
+      switch (x->value % 2) {
+      case 0: even.insert(x); break;
+      case 1: odd.insert(x); break;
+      }
     }
 
     order.merge(even).merge(odd);
