@@ -8,14 +8,13 @@ libraries.
 
 The following container templates are currently implemented
 
+ * intrusive_heap --- Pairing heap implementing inhume & exhume.
  * intrusive_order --- Sorted container implementing insert & delete with
    optimized inserts at the back as well as efficient merge.
  * intrusive_queue --- FIFO container implementing enqueue & dequeue.
  * intrusive_stack --- LIFO container implementing push & pop.
  * intrusive_tree --- Red-black tree implementing graft & prune, as well as
-   find and efficient iteration via next & prev.  With assertions enabled,
-   the entire tree is validated as pre- and post-conditions; to disable,
-   define NDEBUG.
+   find and efficient iteration via next & prev.
 
 as well as the following utility templates
 
@@ -24,6 +23,10 @@ as well as the following utility templates
    removed from a container prior to object destruction.
  * singleton --- Singleton template, instantiates before main.
  * try --- Converts traditional error reporting to exceptions.
+
+With assertions enabled, intrusive_heap and intrusive_tree are validated as
+pre- and post-conditions, which will wreck the algorithmic complexity; to
+disable, define NDEBUG.
 
 A small test suite is available and can be run via
 
