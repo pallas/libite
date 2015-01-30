@@ -24,6 +24,10 @@ as well as the following utility templates
  * singleton --- Singleton template, instantiates before main.
  * try --- Converts traditional error reporting to exceptions.
 
+and the following test programs
+
+ * heapsort --- Read ints on std::cin, sort via heap, & write to std::cout.
+
 With assertions enabled, intrusive_heap and intrusive_tree are validated as
 pre- and post-conditions, which will wreck the algorithmic complexity; to
 disable, define NDEBUG.
