@@ -27,6 +27,7 @@ as well as the following utility templates
 and the following test programs
 
  * heapsort --- Read ints on std::cin, sort via heap, & write to std::cout.
+ * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 
 With assertions enabled, intrusive_heap and intrusive_tree are validated as
 pre- and post-conditions, which will wreck the algorithmic complexity; to
