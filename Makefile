@@ -11,6 +11,7 @@ override CXXFLAGS += $(DEBUG) -MD -MP
 
 PROGRAMS := \
 	heapsort \
+	treesort \
 	#
 
 TESTS := \
