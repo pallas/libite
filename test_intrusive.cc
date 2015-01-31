@@ -97,7 +97,7 @@ main(int, char*[]) {
       delete y;
   }}
 
-  std::cout << "tree";
+  std::cout << "tree" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     std::cout << ' ' << i->value;
     if (i == y)
@@ -105,7 +105,7 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
-  std::cout << "heap";
+  std::cout << "heap" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     node* x = heap.exhume();
     assert(x->value == i->value);
@@ -118,7 +118,7 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
-  std::cout << "order";
+  std::cout << "order" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     node* x = order.remove();
     assert(x->value == i->value);
@@ -131,7 +131,7 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
-  std::cout << "queue";
+  std::cout << "queue" << '\t';
   while (!queue.empty()) {
     node* x = queue.dequeue();
     std::cout << ' ' << tree.find(x->value)->value;
@@ -147,7 +147,7 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
-  std::cout << "stack";
+  std::cout << "stack" << '\t';
   while (!stack.empty()) {
     node* x = stack.pop();
     std::cout << ' ' << x->value;
