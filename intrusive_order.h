@@ -4,6 +4,8 @@
 #include "do_not_copy.h"
 #include "intrusive_link.h"
 
+#include "compare.h"
+
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
@@ -12,14 +14,14 @@ template <class X>
 struct intrusive_order_link : private intrusive_link<X> {
   typedef intrusive_order_link type;
   template <class T, typename intrusive_order_link<T>::type T::*link,
-            typename K, K T::*key>
+            typename K, K T::*key, compare_t (*C)(K const &, K const &)>
     friend class intrusive_order;
 
   bool bound() const { return intrusive_link<X>::p; }
 };
 
 template <class T, typename intrusive_order_link<T>::type T::*link,
-          typename K, K T::*key>
+          typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
 class intrusive_order : public do_not_copy {
 public:
   intrusive_order() : head(NULL), tail(&head) { }
@@ -31,14 +33,14 @@ public:
     assert(!(t->*link).bound());
     assert(!empty() || &head == tail);
 
-    if (empty() || !(t->*key < (*tail)->*key)) {
+    if (empty() || compare(t->*key, (*tail)->*key) >= 0) {
       *tail = t;
       tail = &(t->*link).p;
       *tail = t;
     } else {
       T ** c;
       for (c = &head ; c != tail ; c = &((*c)->*link).p)
-        if (!((*c)->*key < t->*key))
+        if (compare((*c)->*key, t->*key) >= 0)
           break;
       (t->*link).p = *c;
       *c = t;
@@ -93,7 +95,7 @@ public:
     intrusive_order result;
 
     while (!this->empty() && !that.empty())
-      result.insert( this->head->*key < that.head->*key
+      result.insert( compare(this->head->*key, that.head->*key) < 0
                    ? this->remove()
                    : that.remove() );
 

@@ -4,6 +4,8 @@
 #include "do_not_copy.h"
 #include "intrusive_link.h"
 
+#include "compare.h"
+
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
@@ -13,7 +15,7 @@ class intrusive_heap_link : private intrusive_link<X> {
 public:
   typedef intrusive_heap_link type;
   template <class T, typename intrusive_heap_link<T>::type T::*link,
-            typename K, K T::*key>
+            typename K, K T::*key, compare_t (*C)(K const &, K const &)>
     friend class intrusive_heap;
 
   bool bound() const {
@@ -26,7 +28,7 @@ private:
 };
 
 template <class T, typename intrusive_heap_link<T>::type T::*link,
-          typename K, K T::*key>
+          typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
 class intrusive_heap : public do_not_copy {
 public:
 
@@ -101,7 +103,7 @@ private:
     assert(bar);
 
     using std::swap;
-    if (bar->*key < foo->*key)
+    if (compare(bar->*key, foo->*key) < 0)
       swap(foo, bar);
 
     assert(!sibling(bar));
@@ -173,7 +175,7 @@ private:
       return true;
 
     for (T* c = child(t) ; c ; c = sibling(c))
-      if (c->*key < t->*key || !valid(c))
+      if (compare(c->*key, t->*key) < 0 || !valid(c))
         return false;
 
     return valid(sibling(t));

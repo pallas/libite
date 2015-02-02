@@ -4,6 +4,8 @@
 #include "do_not_copy.h"
 #include "intrusive_link.h"
 
+#include "compare.h"
+
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
@@ -13,7 +15,7 @@ class intrusive_tree_link : private intrusive_link<X> {
 public:
   typedef intrusive_tree_link type;
   template <class T, typename intrusive_tree_link<T>::type T::*link,
-            typename K, K T::*key>
+            typename K, K T::*key, compare_t (*C)(K const &, K const &)>
     friend class intrusive_tree;
 
   bool bound() const {
@@ -32,7 +34,7 @@ private:
 };
 
 template <class T, typename intrusive_tree_link<T>::type T::*link,
-          typename K, K T::*key>
+          typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
 class intrusive_tree : public do_not_copy {
 public:
   intrusive_tree() : root_(NULL) { }
@@ -47,7 +49,7 @@ public:
     T ** i = &root_;
     while (*i) {
       (t->*link).p.p = *i;
-      i = t->*key < (*i)->*key
+      i = compare(t->*key, (*i)->*key) < 0
         ? &((*i)->*link).l.p
         : &((*i)->*link).r.p
         ;
@@ -297,8 +299,7 @@ public:
     assert(!is_bound(n));
     assert(!is_member(n));
 
-    assert(!(o->*key < n->*key));
-    assert(!(n->*key < o->*key));
+    assert(0 == compare(o->*key, n->*key));
 
     assert(is_red(n));
     if (is_black(o)) {
@@ -432,8 +433,7 @@ public:
     T* n = root();
 
     while (n) {
-      const K & nk = n->*key;
-      switch((nk<k) - (k<nk)) {
+      switch(compare(k, n->*key)) {
       case -1: n = left(n); break;
       case  0: return n;
       case  1: n = right(n); break;
@@ -689,9 +689,9 @@ private:
         return false;
     }
 
-    if (l && t->*key < l->*key)
+    if (l && compare(t->*key, l->*key) < 0)
       return false;
-    if (r && r->*key < t->*key)
+    if (r && compare(r->*key, t->*key) < 0)
       return false;
 
     return valid(l) && valid(r);
