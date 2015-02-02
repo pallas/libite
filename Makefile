@@ -10,6 +10,7 @@ override CFLAGS += $(DEBUG) -MD -MP
 override CXXFLAGS += $(DEBUG) -MD -MP
 
 PROGRAMS := \
+	argsort \
 	heapsort \
 	treesort \
 	#
