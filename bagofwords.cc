@@ -48,8 +48,7 @@ main(int argc, char* argv[]) {
   while (!heap.empty()) {
     node* x = table.bus(heap.exhume());
     std::cout << x->count << " " << x->string << std::endl;
-    if (!x->bound())
-      delete x;
+    x->kill();
   }
 
   return EXIT_SUCCESS;
