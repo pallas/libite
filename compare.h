@@ -20,4 +20,9 @@ compare_t compare(const char * const &foo, const char * const &bar) {
   return compare<int>(strcmp(foo, bar), 0);
 }
 
+template <typename T>
+compare_t reverse_compare(T const &foo, T const &bar) {
+  return -compare(foo, bar);
+}
+
 #endif//COMPARE_H
