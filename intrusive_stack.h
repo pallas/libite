@@ -19,10 +19,10 @@ struct intrusive_stack_link : private intrusive_link<X> {
 template <class T, typename intrusive_stack_link<T>::type T::*link>
 class intrusive_stack : public do_not_copy {
 public:
-  intrusive_stack() : head(reinterpret_cast<T*>(0xbad)) { }
+  intrusive_stack() : head(const_cast<T*>(sentinal())) { }
   ~intrusive_stack() { assert(empty()); }
 
-  bool empty() const { return head == reinterpret_cast<const T*>(0xbad); }
+  bool empty() const { return head == sentinal(); }
 
   intrusive_stack & push(T* t) {
     assert(!(t->*link).bound());
@@ -55,6 +55,7 @@ public:
 
 private:
   T * head;
+  const T* sentinal() const { return reinterpret_cast<const T*>(&head); }
 };
 
 #endif//INTRUSIVE_STACK_H
