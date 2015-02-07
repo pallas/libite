@@ -13,19 +13,25 @@ The following container templates are currently implemented
    optimized inserts at the back as well as efficient merge.
  * intrusive_queue --- FIFO container implementing enqueue & dequeue.
  * intrusive_stack --- LIFO container implementing push & pop.
+ * intrusive_table --- Chained hash table implementing set, get, & bus; user
+   is responsible for providing hash buckets and performing rehashing.
  * intrusive_tree --- Red-black tree implementing graft & prune, as well as
    find and efficient iteration via next & prev.
 
 as well as the following utility templates
 
+ * compare --- Generic less-than, equal, greater-than template.
  * do_not_copy --- Equivalent to boost::noncopyable.
  * intrusive_link --- Shared pointer wrapper, which asserts that links are
    removed from a container prior to object destruction.
+ * hash --- Generic hash template, implemented as 64-bit FNV-1a.
  * singleton --- Singleton template, instantiates before main.
  * try --- Converts traditional error reporting to exceptions.
 
 and the following test programs
 
+ * argsort --- Take program arguments, sort via heap, & write to std::cout.
+ * bagofwords --- Take program arguments & write frequency to std::cout.
  * heapsort --- Read ints on std::cin, sort via heap, & write to std::cout.
  * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 
