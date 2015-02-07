@@ -11,6 +11,7 @@ override CXXFLAGS += $(DEBUG) -MD -MP
 
 PROGRAMS := \
 	argsort \
+	bagofwords \
 	heapsort \
 	treesort \
 	#
@@ -27,6 +28,8 @@ DEPENDS = $(PROGRAMS:=.d) $(TESTS:=.d) $(COMMON:=.d)
 -include $(DEPENDS)
 
 OBJECTS = $(PROGRAMS:=.o) $(TESTS:=.o) $(COMMON:=.o)
+
+bagofwords: LDFLAGS += -lm
 
 $(PROGRAMS) $(TESTS) : %: %.o $(COMMON:=.o)
 
