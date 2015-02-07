@@ -74,6 +74,13 @@ public:
     return *this;
   }
 
+  T* iterator() const { return head; }
+
+  T* next(const T* t) const {
+    assert((t->*link).bound());
+    return t != *tail ? (t->*link).p : NULL;
+  }
+
 private:
   T * head;
   T ** tail;

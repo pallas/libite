@@ -53,6 +53,13 @@ public:
     return t;
   }
 
+  T* iterator() const { return head; }
+
+  T* next(const T* t) const {
+    assert((t->*link).bound());
+    return (t->*link).p != sentinal() ? (t->*link).p : NULL;
+  }
+
 private:
   T * head;
   const T* sentinal() const { return reinterpret_cast<const T*>(&head); }
