@@ -106,7 +106,7 @@ main(int, char*[]) {
   std::cout << std::endl;
 
   std::cout << "heap" << '\t';
-  for (node* i = tree.min() ; i ; i = tree.next(i)) {
+  for (node* i = order.iterator() ; i ; i = order.next(i)) {
     node* x = heap.exhume();
     assert(x->value == i->value);
     std::cout << ' ' << x->value;
