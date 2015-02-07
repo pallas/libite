@@ -17,6 +17,7 @@ PROGRAMS := \
 
 TESTS := \
 	test_intrusive \
+	test_associative \
 	#
 
 COMMON := \
