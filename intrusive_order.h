@@ -33,14 +33,14 @@ public:
     assert(!(t->*link).bound());
     assert(!empty() || &head == tail);
 
-    if (empty() || compare(t->*key, (*tail)->*key) >= 0) {
+    if (empty() || C(t->*key, (*tail)->*key) >= 0) {
       *tail = t;
       tail = &(t->*link).p;
       *tail = t;
     } else {
       T ** c;
       for (c = &head ; c != tail ; c = &((*c)->*link).p)
-        if (compare((*c)->*key, t->*key) >= 0)
+        if (C((*c)->*key, t->*key) >= 0)
           break;
       (t->*link).p = *c;
       *c = t;
@@ -95,7 +95,7 @@ public:
     intrusive_order result;
 
     while (!this->empty() && !that.empty())
-      result.insert( compare(this->head->*key, that.head->*key) < 0
+      result.insert( C(this->head->*key, that.head->*key) < 0
                    ? this->remove()
                    : that.remove() );
 

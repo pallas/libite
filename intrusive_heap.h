@@ -103,7 +103,7 @@ private:
     assert(bar);
 
     using std::swap;
-    if (compare(bar->*key, foo->*key) < 0)
+    if (C(bar->*key, foo->*key) < 0)
       swap(foo, bar);
 
     assert(!sibling(bar));
@@ -175,7 +175,7 @@ private:
       return true;
 
     for (T* c = child(t) ; c ; c = sibling(c))
-      if (compare(c->*key, t->*key) < 0 || !valid(c))
+      if (C(c->*key, t->*key) < 0 || !valid(c))
         return false;
 
     return valid(sibling(t));
