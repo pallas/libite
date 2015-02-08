@@ -57,6 +57,8 @@ public:
     return true;
   }
 
+  size_t buckets() const { return n_buckets_; }
+
   bucket_t* rehash(bucket_t bs[], size_t n) {
     assert(buckets_ || 0 == n_buckets_);
 
