@@ -116,6 +116,9 @@ public:
   }
 
   T* get(const K & k) const {
+    if (!n_buckets_)
+      return NULL;
+
     bucket_t & b = buckets_[index(k)];
 
     for (T ** c = &b.p ; *c != b.sentinal() ; c = &((*c)->*link).p)
