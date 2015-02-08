@@ -42,31 +42,31 @@ public:
   typedef intrusive_table_bucket<T> bucket_t;
 
   intrusive_table(bucket_t bs[] = NULL, const size_t n = 0)
-    : buckets(bs), n_buckets(n)
-  { assert(buckets || 0 == n_buckets); set_buckets(); }
+    : buckets_(bs), n_buckets_(n)
+  { assert(buckets_ || 0 == n_buckets_); set_buckets(); }
 
   ~intrusive_table() { assert(empty()); reset_buckets(); }
 
   bool empty() const {
-    assert(buckets || 0 == n_buckets);
+    assert(buckets_ || 0 == n_buckets_);
 
-    for (size_t i = 0 ; i < n_buckets ; ++i)
-      if (buckets[i].p != buckets[i].sentinal())
+    for (size_t i = 0 ; i < n_buckets_ ; ++i)
+      if (buckets_[i].p != buckets_[i].sentinal())
         return false;
 
     return true;
   }
 
   bucket_t* rehash(bucket_t bs[], size_t n) {
-    assert(buckets || 0 == n_buckets);
+    assert(buckets_ || 0 == n_buckets_);
 
     bucket_t ts;
 
     take_all(ts);
     reset_buckets();
 
-    std::swap(buckets, bs);
-    std::swap(n_buckets, n);
+    std::swap(buckets_, bs);
+    std::swap(n_buckets_, n);
 
     set_buckets();
     give_all(ts);
@@ -80,10 +80,10 @@ public:
   }
 
   intrusive_table & set(T* t) {
-    assert(buckets);
+    assert(buckets_);
     assert(!is_bound(t));
 
-    insert_at(&buckets[index(t)].p, t);
+    insert_at(&buckets_[index(t)].p, t);
 
     assert(is_bound(t));
     assert(!empty());
@@ -94,7 +94,7 @@ public:
     assert(is_bound(t));
     assert(is_member(t));
 
-    bucket_t & b = buckets[index(t)];
+    bucket_t & b = buckets_[index(t)];
     assert(b.p);
 
     T ** c = &b.p;
@@ -116,7 +116,7 @@ public:
   }
 
   T* get(const K & k) const {
-    bucket_t & b = buckets[index(k)];
+    bucket_t & b = buckets_[index(k)];
 
     for (T ** c = &b.p ; *c != b.sentinal() ; c = &((*c)->*link).p)
       if (0 == C(k, (*c)->*key))
@@ -126,7 +126,7 @@ public:
   }
 
   bool is_member(const T* t) const {
-    bucket_t & b = buckets[index(t)];
+    bucket_t & b = buckets_[index(t)];
 
     for (T ** c = &b.p ; *c != b.sentinal() ; c = &((*c)->*link).p)
       if (t == *c)
@@ -136,9 +136,9 @@ public:
   }
 
   T* iterator() const {
-    for (size_t i = 0 ; i < n_buckets ; ++i)
-      if (buckets[i].p != buckets[i].sentinal())
-        return buckets[i].p;
+    for (size_t i = 0 ; i < n_buckets_ ; ++i)
+      if (buckets_[i].p != buckets_[i].sentinal())
+        return buckets_[i].p;
 
     return NULL;
   }
@@ -149,10 +149,10 @@ public:
     T* n = (t->*link).p;
 
     if (bucket_t* b = is_bucket(n)) {
-      size_t o = b - buckets;
-      for (size_t i = o + 1; i < n_buckets ; ++i)
-        if (buckets[i].p != buckets[i].sentinal())
-          return buckets[i].p;
+      size_t o = b - buckets_;
+      for (size_t i = o + 1; i < n_buckets_ ; ++i)
+        if (buckets_[i].p != buckets_[i].sentinal())
+          return buckets_[i].p;
 
       return NULL;
     }
@@ -161,18 +161,18 @@ public:
   }
 
 private:
-  bucket_t * buckets;
-  size_t n_buckets;
+  bucket_t * buckets_;
+  size_t n_buckets_;
 
   static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
 
-  hash_t index(const K & k) const { return H(k) % n_buckets; }
+  hash_t index(const K & k) const { return H(k) % n_buckets_; }
   hash_t index(const T* n) const { assert(n); return index(n->*key); }
 
   bucket_t* is_bucket(const T* n) const {
     assert(n);
     const bucket_t* b = reinterpret_cast<const bucket_t*>(n);
-    return (&buckets[0] <= b && b < &buckets[n_buckets]) ? const_cast<bucket_t*>(b) : NULL;
+    return (&buckets_[0] <= b && b < &buckets_[n_buckets_]) ? const_cast<bucket_t*>(b) : NULL;
   }
 
   static T* take_next(T ** p) {
@@ -210,8 +210,8 @@ private:
     assert(!ts.p);
     ts.p = ts.sentinal();
 
-    for (size_t i = 0 ; i < n_buckets ; ++i) {
-      bucket_t & b = buckets[i];
+    for (size_t i = 0 ; i < n_buckets_ ; ++i) {
+      bucket_t & b = buckets_[i];
       while (b.p != b.sentinal())
         insert_at(&ts.p, take_next(&b.p));
     }
@@ -228,18 +228,18 @@ private:
   }
 
   void set_buckets() {
-    for (size_t i = 0 ; i < n_buckets ; ++i) {
-      assert(!buckets[i].p);
-      buckets[i].p = buckets[i].sentinal();
+    for (size_t i = 0 ; i < n_buckets_ ; ++i) {
+      assert(!buckets_[i].p);
+      buckets_[i].p = buckets_[i].sentinal();
     }
     assert(empty());
   }
 
   void reset_buckets() {
     assert(empty());
-    for (size_t i = 0 ; i < n_buckets ; ++i) {
-      assert(buckets[i].p == buckets[i].sentinal());
-      buckets[i].p = NULL;
+    for (size_t i = 0 ; i < n_buckets_ ; ++i) {
+      assert(buckets_[i].p == buckets_[i].sentinal());
+      buckets_[i].p = NULL;
     }
   }
 };
