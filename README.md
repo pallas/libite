@@ -32,6 +32,9 @@ and the following test programs
 
  * argsort --- Take program arguments, sort via heap, & write to std::cout.
  * bagofwords --- Take program arguments & write frequency to std::cout.
+ * dijkstra --- Read (from, to, cost) tuples on std::cin, perform Dijkstra's
+   algorithm on the graph starting at the lexicographically first node, &
+   write routes plus costs to std::cout.
  * heapsort --- Read ints on std::cin, sort via heap, & write to std::cout.
  * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 

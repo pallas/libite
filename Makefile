@@ -12,6 +12,7 @@ override CXXFLAGS += $(DEBUG) -MD -MP
 PROGRAMS := \
 	argsort \
 	bagofwords \
+	dijkstra \
 	heapsort \
 	treesort \
 	#
