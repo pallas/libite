@@ -53,7 +53,7 @@ public:
     return t;
   }
 
-  T* iterator() const { return head; }
+  T* iterator() const { return !empty() ? head : NULL; }
 
   T* next(const T* t) const {
     assert((t->*link).bound());
