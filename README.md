@@ -12,6 +12,7 @@ The following container templates are currently implemented
  * intrusive_order --- Sorted container implementing insert & delete with
    optimized inserts at the back as well as efficient merge.
  * intrusive_queue --- FIFO container implementing enqueue & dequeue.
+ * intrusive_set --- Disjoint set implementing join, archetype, & dissolve.
  * intrusive_stack --- LIFO container implementing push & pop.
  * intrusive_table --- Chained hash table implementing set, get, & bus; user
    is responsible for providing hash buckets and performing rehashing.
