@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 
+#include "intrusive_set.h"
 #include "intrusive_tree.h"
 #include "intrusive_heap.h"
 #include "intrusive_stack.h"
@@ -14,6 +15,7 @@ struct node {
   int value;
   node(int v) : value(v) { }
 
+  intrusive_set_link<node> set_link;
   intrusive_tree_link<node> tree_link;
   intrusive_heap_link<node> heap_link;
   intrusive_order_link<node> order_link;
@@ -23,6 +25,7 @@ struct node {
   bool
   bound() const {
     return false
+        || set_link.bound()
         || tree_link.bound()
         || heap_link.bound()
         || order_link.bound()
@@ -31,6 +34,7 @@ struct node {
         ;;
   }
 
+  typedef intrusive_set<node, &node::set_link> set_t;
   typedef intrusive_tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
   typedef intrusive_heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
   typedef intrusive_order<node, &node::order_link, typeof(node::value), &node::value> order_t;
@@ -97,11 +101,17 @@ main(int, char*[]) {
       delete y;
   }}
 
+  node::set_t even, odd;
+
   std::cout << "tree" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     std::cout << ' ' << i->value;
     if (i == y)
         std::cout << '*';
+    switch (i->value % 2) {
+    case 0: even.join(i); break;
+    case 1: odd.join(i); break;
+    }
   }
   std::cout << std::endl;
 
@@ -113,10 +123,34 @@ main(int, char*[]) {
     if (x == y)
         std::cout << '*';
 
+    if (node::set_t::typed(x))
+      switch (x->value % 2) {
+      case 0: assert(even.contains(x)); break;
+      case 1: assert(odd.contains(x)); break;
+      }
+
     if (!x->bound())
       delete x;
   }
   std::cout << std::endl;
+
+  node::set_t all;
+
+  all.conjoin(even);
+  assert(even.empty());
+
+  all.conjoin(odd);
+  assert(odd.empty());
+
+  std::cout << "set" << '\t';
+  for (node* i = all.iterator() ; i ; i = all.next(i)) {
+    std::cout << ' ' << i->value;
+    if (i == y)
+        std::cout << '*';
+  }
+  std::cout << std::endl;
+
+  all.dissolve();
 
   std::cout << "order" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
