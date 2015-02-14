@@ -40,6 +40,7 @@ and the following test programs
  * kruskal --- Read (from, to, cost) tuples on std::cin, perform Kruskal's
    algorithm on the graph, & write edges composing a minimum spanning tree
    to std::cout.
+ * ordersort --- Read ints on std::cin, sort via order, & write to std::cout.
  * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 
 With assertions enabled, intrusive_heap and intrusive_tree are validated as
