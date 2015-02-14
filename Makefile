@@ -14,6 +14,7 @@ PROGRAMS := \
 	bagofwords \
 	dijkstra \
 	heapsort \
+	kruskal \
 	treesort \
 	#
 
