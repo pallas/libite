@@ -75,7 +75,7 @@ struct vertex_t {
       set_t* that_a = set_t::archetype(that);
       if (this_a == that_a)
         return false;
-      delete this_a->conjoin(*that_a);
+      delete this_a->conjoin(that_a);
     }
 
     return true;

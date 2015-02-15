@@ -78,37 +78,37 @@ public:
     return this == archetype(t);
   }
 
-  intrusive_set* conjoin(intrusive_set & that) {
-    assert(this != &that);
+  intrusive_set* conjoin(intrusive_set* that) {
+    assert(this != that);
 
-    if (that.empty())
-      return &that;
+    if (that->empty())
+      return that;
 
     // union by rank
-    if (empty() || rank < that.rank) {
-      std::swap(head, that.head);
-      std::swap(tail, that.tail);
-      std::swap(rank, that.rank);
+    if (empty() || rank < that->rank) {
+      std::swap(head, that->head);
+      std::swap(tail, that->tail);
+      std::swap(rank, that->rank);
 
       (head->*link).p.p = reinterpret_cast<T*>(this);
       (head->*link).toggle();
-    } else if (rank == that.rank)
+    } else if (rank == that->rank)
       ++rank;
 
-    if (!that.empty()) {
+    if (!that->empty()) {
       assert((head->*link).root());
-      (that.head->*link).p.p = head;
+      (that->head->*link).p.p = head;
 
-      *tail = that.head;
-      tail = that.tail;
+      *tail = that->head;
+      tail = that->tail;
     }
 
-    that.head = NULL;
-    that.tail = &that.head;
-    that.rank = 0;
+    that->head = NULL;
+    that->tail = &that->head;
+    that->rank = 0;
 
-    assert(that.empty());
-    return &that;
+    assert(that->empty());
+    return that;
   }
 
   intrusive_set & dissolve() {
