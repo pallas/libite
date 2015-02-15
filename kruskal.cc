@@ -62,6 +62,24 @@ struct vertex_t {
   }
 
   void kill() { if (!bound()) delete this; }
+
+  bool unify(vertex_t* that) {
+    if (!typed() && !that->typed())
+      (new set_t)->join(this).join(that);
+    else if (!typed())
+      set_t::archetype(that)->join(this);
+    else if (!that->typed())
+      set_t::archetype(this)->join(that);
+    else {
+      set_t* this_a = set_t::archetype(this);
+      set_t* that_a = set_t::archetype(that);
+      if (this_a == that_a)
+        return false;
+      delete this_a->conjoin(*that_a);
+    }
+
+    return true;
+  }
 };
 
 void
@@ -108,20 +126,8 @@ main(int, char* argv[]) {
 
   while (!edges.empty()) {
     edge_t* e = edges.exhume();
-    if (!e->from->typed() && !e->to->typed()) {
-      vertex_t::set_t* s = new vertex_t::set_t;
-      s->join(e->from);
-      s->join(e->to);
-    } else if (!e->from->typed()) {
-      vertex_t::set_t::archetype(e->to)->join(e->from);
-    } else if (!e->to->typed()) {
-      vertex_t::set_t::archetype(e->from)->join(e->to);
-    } else {
-      vertex_t::set_t* s = vertex_t::set_t::archetype(e->from);
-      if (s->contains(e->to))
-        continue;
-      delete s->conjoin(*vertex_t::set_t::archetype(e->to));
-    }
+    if (!e->from->unify(e->to))
+      continue;
 
     std::cout
       << e->from->id << " "
