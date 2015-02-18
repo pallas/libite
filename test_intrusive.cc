@@ -136,10 +136,10 @@ main(int, char*[]) {
 
   node::set_t all;
 
-  all.conjoin(even);
+  all.conjoin(&even);
   assert(even.empty());
 
-  all.conjoin(odd);
+  all.conjoin(&odd);
   assert(odd.empty());
 
   std::cout << "set" << '\t';
