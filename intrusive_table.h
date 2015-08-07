@@ -165,6 +165,15 @@ public:
     return n;
   }
 
+  typedef void (T::*wiper_t)();
+
+  T* wipe(T* t, wiper_t w = NULL) {
+    T* n = next(t);
+    if (w)
+      (bus(t)->*w)();
+    return n;
+  }
+
 private:
   bucket_t * buckets_;
   size_t n_buckets_;
