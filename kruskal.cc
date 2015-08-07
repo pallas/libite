@@ -126,13 +126,12 @@ main(int, char* argv[]) {
 
   while (!edges.empty()) {
     edge_t* e = edges.exhume();
-    if (!e->from->unify(e->to))
-      continue;
-
-    std::cout
-      << e->from->id << " "
-      << e->to->id << " "
-      << e->cost << std::endl;
+    if (e->from->unify(e->to))
+      std::cout
+        << e->from->id << " "
+        << e->to->id << " "
+        << e->cost << std::endl;
+    delete e;
   }
 
   for (vertex_t* v = vertices.iterator() ; v ;
