@@ -111,13 +111,17 @@ public:
     return that;
   }
 
-  intrusive_set & dissolve() {
+  typedef void (T::*dissolver_t)();
+
+  intrusive_set & dissolve(dissolver_t d = NULL) {
     while (T* t = head) {
       assert(typed(t));
       head = t != *tail ? (t->*link).n.p : NULL;
       (t->*link).p.p = NULL;
       (t->*link).n.p = NULL;
       assert(!typed(t));
+      if (d)
+        (t->*d)();
     }
 
     tail = &head;
