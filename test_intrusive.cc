@@ -150,7 +150,7 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
-  all.dissolve();
+  all.dissolve(&node::kill);
 
   std::cout << "order" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
