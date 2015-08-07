@@ -1,6 +1,7 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include <string>
 #include <cstring>
 #include <stdint.h>
 
@@ -25,6 +26,10 @@ template <typename T> hash_t hash(T const &t) {
 
 template <> hash_t hash(const char * const &t) {
   return fnv_1a(reinterpret_cast<const unsigned char *>(t), strlen(t));
+}
+
+template <> hash_t hash(std::string const &s) {
+  return fnv_1a(reinterpret_cast<const unsigned char *>(s.data()), s.length());
 }
 
 #endif//HASH_H
