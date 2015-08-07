@@ -135,13 +135,10 @@ main(int, char* argv[]) {
       << e->cost << std::endl;
   }
 
-  vertex_t* v = vertices.iterator();
-  while (v) {
+  for (vertex_t* v = vertices.iterator() ; v ;
+       v = vertices.wipe(v, &vertex_t::kill)) {
     if (v->typed())
       delete &v->archetype()->dissolve();
-    vertex_t* x = vertices.next(v);
-    std::swap(x, v);
-    vertices.bus(x)->kill();
   }
 
   delete [] vertices.dehash();
