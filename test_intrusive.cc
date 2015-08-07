@@ -34,6 +34,8 @@ struct node {
         ;;
   }
 
+  void kill() { if (!bound()) delete this; }
+
   typedef intrusive_set<node, &node::set_link> set_t;
   typedef intrusive_tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
   typedef intrusive_heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
@@ -97,8 +99,7 @@ main(int, char*[]) {
     node* z = new node(y->value);
     tree.transplant(y, z);
     assert(z->bound());
-    if (!y->bound())
-      delete y;
+    y->kill();
   }}
 
   node::set_t even, odd;
@@ -129,8 +130,7 @@ main(int, char*[]) {
       case 1: assert(odd.contains(x)); break;
       }
 
-    if (!x->bound())
-      delete x;
+    x->kill();
   }
   std::cout << std::endl;
 
@@ -160,8 +160,7 @@ main(int, char*[]) {
     if (x == y)
         std::cout << '*';
 
-    if (!x->bound())
-      delete x;
+    x->kill();
   }
   std::cout << std::endl;
 
@@ -176,8 +175,7 @@ main(int, char*[]) {
     if (x != y)
       tree.prune(x);
 
-    if (!x->bound())
-      delete x;
+    x->kill();
   }
   std::cout << std::endl;
 
@@ -188,15 +186,13 @@ main(int, char*[]) {
     if (x == y)
         std::cout << '*';
 
-    if (!x->bound())
-      delete x;
+    x->kill();
   }
   std::cout << std::endl;
 
   {{
     node* z = tree.prune(tree.root());
-    if (!z->bound())
-      delete z;
+    z->kill();
   }}
 
   return EXIT_SUCCESS;
