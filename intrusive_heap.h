@@ -24,7 +24,8 @@ public:
   }
 
 private:
-  intrusive_link<X> s, c;
+  intrusive_link_tag<X> s;
+  intrusive_link<X> c;
 };
 
 template <class T, typename intrusive_heap_link<T>::type T::*link,
@@ -41,7 +42,7 @@ public:
     assert(valid());
     assert(!is_bound(t));
 
-    link_sibling(t, NULL);
+    link_parent(NULL, t);
     link_root(empty() ? t : meld(root_, t));
 
     assert(is_bound(t));
@@ -74,6 +75,9 @@ public:
         link_root(meld(root_, s));
         link_sibling(root_, r);
       }
+
+      assert(!sibling(root_));
+      link_parent(NULL, root_);
     }
 
     unlink(m);
@@ -93,10 +97,17 @@ private:
   T * root_;
 
   static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
-  static bool is_baby(const T* n) { assert(n); return n == (n->*link).s.p; }
+  static bool is_baby(const T* n) { assert(n); return (n->*link).s.tagged(); }
 
   static T* sibling(const T* n) { assert(n); return !is_baby(n) ? (n->*link).s.p : NULL; }
   static T* child(const T* n) { assert(n); return (n->*link).c.p; }
+
+  static T* parent(const T* n) {
+    assert(n);
+    while (const T* s = sibling(n))
+      n = s;
+    return (n->*link).s.tagless();
+  }
 
   T* meld(T* foo, T* bar) {
     assert(foo);
@@ -107,14 +118,18 @@ private:
       swap(foo, bar);
 
     assert(!sibling(bar));
-    link_sibling(bar, child(foo));
-    link_child(foo, bar);
+    make_child(foo, bar);
 
     return foo;
   }
 
   void link_root(T* n) {
     root_ = n;
+  }
+
+  void link_parent(T* p, T* c) {
+    assert(c);
+    (c->*link).s.tag(p);
   }
 
   void link_child(T* p, T* c) {
@@ -124,7 +139,18 @@ private:
 
   void link_sibling(T* n, T* s) {
     assert(n);
-    (n->*link).s.p = s ? s : n;
+    (n->*link).s.p = s;
+  }
+
+  void make_child(T* p, T* c) {
+    assert(p);
+    assert(c);
+    if (T* cs = child(p))
+      link_sibling(c, cs);
+    else
+      link_parent(p, c);
+    link_child(p, c);
+    assert(parent(child(p)) == p);
   }
 
   void unlink(T* n) {
@@ -178,7 +204,7 @@ private:
       return false;
 
     for (T* c = child(t) ; c ; c = sibling(c))
-      if (C(c->*key, t->*key) < 0 || !valid(c))
+      if (C(c->*key, t->*key) < 0 || parent(c) != t || !valid(c))
         return false;
 
     return valid(sibling(t));
@@ -187,6 +213,7 @@ private:
   bool valid() const {
     if (empty())
       return true;
+    assert(!parent(root_));
     assert(!sibling(root_));
     return valid(root_);
   }
