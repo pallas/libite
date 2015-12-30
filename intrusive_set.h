@@ -20,12 +20,8 @@ struct intrusive_set_link {
   }
 
 private:
-  bool root() const { return intptr_t(p.p) & 0x1; }
-
-  void toggle() { p.p = (X*)(intptr_t(p.p) ^ 0x1); }
-  X* up() const { return (X*)(intptr_t(p.p) & ~0x1); }
-
-  intrusive_link<X> p, n;
+  intrusive_link_tag<X> p;
+  intrusive_link<X> n;
 };
 
 template <class T, typename intrusive_set_link<T>::type T::*link>
@@ -45,8 +41,7 @@ public:
     } else {
       if (!rank)
         ++rank;
-      (t->*link).p.p = reinterpret_cast<T*>(this);
-      (t->*link).toggle();
+      (t->*link).p.tag(reinterpret_cast<T*>(this));
     }
 
     *tail = t;
@@ -63,14 +58,14 @@ public:
   static intrusive_set* archetype(const T* t) {
     assert(typed(t));
 
-    while (!(t->*link).root()) {
+    while (!(t->*link).p.tagged()) {
       const T* p = (t->*link).p.p;
-      if (!(p->*link).root()) // compress path
+      if (!(p->*link).p.tagged()) // compress path
         (const_cast<T*>(t)->*link).p.p = (p->*link).p.p;
       t = p;
     }
 
-    return reinterpret_cast<intrusive_set*>((t->*link).up());
+    return reinterpret_cast<intrusive_set*>((t->*link).p.tagless());
   }
 
   bool contains(const T* t) const {
@@ -90,13 +85,12 @@ public:
       std::swap(tail, that->tail);
       std::swap(rank, that->rank);
 
-      (head->*link).p.p = reinterpret_cast<T*>(this);
-      (head->*link).toggle();
+      (head->*link).p.tag(reinterpret_cast<T*>(this));
     } else if (rank == that->rank)
       ++rank;
 
     if (!that->empty()) {
-      assert((head->*link).root());
+      assert((head->*link).p.tagged());
       (that->head->*link).p.p = head;
 
       *tail = that->head;
