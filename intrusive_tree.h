@@ -62,7 +62,7 @@ public:
       if (!p) {
         assert(is_red(n));
         if (is_red(n))
-          toggle(n); // set BLACK
+          set_black(n);
         break;
       }
 
@@ -118,8 +118,8 @@ public:
         else // if (is_right(n))
           rotate_left(g);
 
-        toggle(g); // set RED
-        toggle(p); // set BLACK
+        set_red(g);
+        set_black(p);
 
         assert(is_red(g));
         assert(is_black(p));
@@ -133,9 +133,9 @@ public:
       assert(is_red(p));
       assert(is_red(u));
 
-      toggle(g); // make RED
-      toggle(p); // make BLACK
-      toggle(u); // make BLACK
+      set_red(g);
+      set_black(p);
+      set_black(u);
 
       n = g; // to case 1
     }
@@ -185,7 +185,7 @@ public:
 
     if (is_red(c)) {
       assert(c);
-      toggle(c); // set BLACK
+      set_black(c);
 
       assert(!is_bound(t));
       assert(valid());
@@ -204,8 +204,8 @@ public:
       // case 2
       if (is_red(s)) {
         assert(is_black(p));
-        toggle(p); // set RED
-        toggle(s); // set BLACK
+        set_red(p);
+        set_black(s);
 
         if (is_left(n))
           rotate_left(p);
@@ -222,8 +222,8 @@ public:
       // case 4
       if (is_red(p) && is_black(s) && is_black(sl) && is_black(sr)) {
         assert(s);
-        toggle(s); // set RED
-        toggle(p); // set BLACK
+        set_red(s);
+        set_black(p);
         break;
       }
 
@@ -232,13 +232,13 @@ public:
         assert(is_black(s));
         if (is_left(n) && is_black(sr)) {
           assert(is_red(sl));
-          toggle(s); // set RED
-          toggle(sl); // set BLACK
+          set_red(s);
+          set_black(sl);
           rotate_right(s);
         } else if (is_right(n) && is_black(sl)) {
           assert(is_red(sr));
-          toggle(s); // set RED
-          toggle(sr); // set BLACK
+          set_red(s);
+          set_black(sr);
           rotate_left(s);
         }
 
@@ -249,18 +249,18 @@ public:
         sr = right_(s);
 
         if (is_red(p)) {
-          toggle(p); // set BLACK
+          set_black(p);
           if (is_black(s))
-            toggle(s); // set RED
+            set_red(s);
         }
 
         if (is_left(n)) {
           if (is_red(sr))
-            toggle(sr); // set BLACK
+            set_black(sr);
           rotate_left(p);
         } else /* if (is_right(n)) */ {
           if (is_red(sl))
-            toggle(sl); // set BLACK
+            set_black(sl);
           rotate_right(p);
         }
 
@@ -274,7 +274,7 @@ public:
       assert(is_black(sr));
 
       assert(s);
-      toggle(s); // set RED
+      set_red(s);
       n = p; // move to parent
     }
 
@@ -298,8 +298,8 @@ public:
 
     assert(is_red(n));
     if (is_black(o)) {
-      toggle(o); // set RED
-      toggle(n); // set BLACK
+      set_red(o);
+      set_black(n);
     }
 
     if (left_(o))
@@ -448,6 +448,9 @@ private:
 
   static void toggle(T* n) { assert(n); (n->*link).p.toggle(); }
 
+  static void set_red(T* n) { assert(is_black(n)); toggle(n); }
+  static void set_black(T* n) { assert(is_red(n)); toggle(n); }
+
   static T* parent_(const T* n) { assert(n); return (n->*link).p.tagless(); }
   static T* left_(const T* n) { assert(n); return (n->*link).l.p; }
   static T* right_(const T* n) { assert(n); return (n->*link).r.p; }
@@ -534,7 +537,7 @@ private:
     bool black = is_black(c);
     (c->*link).p.p = p;
     if (black)
-      toggle(c);
+      set_black(c);
   }
 
   void rotate_left(T* p) {
