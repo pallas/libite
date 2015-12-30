@@ -20,17 +20,12 @@ public:
 
   bool bound() const {
     assert(p.p || (!l.p && !r.p));
-    return p.p;
+    return p.p; // tagged must mean black, since root has no parent
   }
 
 private:
-  bool red() const { return !black(); }
-  bool black() const { return intptr_t(p.p) & 0x1; }
-
-  void toggle() { p.p = (X*)(intptr_t(p.p) ^ 0x1); }
-  X* up() const { return (X*)(intptr_t(p.p) & ~0x1); }
-
-  intrusive_link<X> p, l, r;
+  intrusive_link_tag<X> p;
+  intrusive_link<X> l, r;
 };
 
 template <class T, typename intrusive_tree_link<T>::type T::*link,
@@ -447,13 +442,13 @@ public:
 private:
   T * root_;
 
-  static bool is_red(const T* n) { return n && (n->*link).red(); }
-  static bool is_black(const T* n) { return !n || (n->*link).black(); }
+  static bool is_red(const T* n) { return n && !(n->*link).p.tagged(); }
+  static bool is_black(const T* n) { return !n || (n->*link).p.tagged(); }
   static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
 
-  static void toggle(T* n) { assert(n); (n->*link).toggle(); }
+  static void toggle(T* n) { assert(n); (n->*link).p.toggle(); }
 
-  static T* parent_(const T* n) { assert(n); return (n->*link).up(); }
+  static T* parent_(const T* n) { assert(n); return (n->*link).p.tagless(); }
   static T* left_(const T* n) { assert(n); return (n->*link).l.p; }
   static T* right_(const T* n) { assert(n); return (n->*link).r.p; }
 
