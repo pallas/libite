@@ -174,6 +174,9 @@ private:
     if (!t)
       return true;
 
+    if (!is_bound(t))
+      return false;
+
     for (T* c = child(t) ; c ; c = sibling(c))
       if (C(c->*key, t->*key) < 0 || !valid(c))
         return false;
