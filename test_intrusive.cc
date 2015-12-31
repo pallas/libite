@@ -124,6 +124,13 @@ main(int, char*[]) {
   }
   std::cout << std::endl;
 
+  for (node* i = odd.iterator() ; i ; i = odd.next(i)) {
+    if (i->heap_link.bound()) {
+      heap.inhume(new node(i->value));
+      heap.sift(i)->kill();
+    }
+  }
+
   std::cout << "heap" << '\t';
   for (node* i = order.iterator() ; i ; i = order.next(i)) {
     node* x = heap.exhume();
