@@ -93,6 +93,20 @@ public:
     return root_;
   }
 
+  T* next(const T* n) const {
+    assert(is_bound(n));
+
+    if (T* c = child(n))
+      return c;
+
+    do {
+      if (T* s = sibling(n))
+        return s;
+    } while (n = parent(n));
+
+    return NULL;
+  }
+
 private:
   T * root_;
 
