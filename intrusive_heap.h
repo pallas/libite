@@ -71,6 +71,38 @@ public:
     return m;
   }
 
+  T* sift(T* t) {
+    assert(valid());
+    assert(is_bound(t));
+
+    if (t == root_)
+      return exhume();
+
+    T* p = parent(t);
+    if (t == child(p)) {
+      take_child(p);
+    } else {
+      T* c = child(p);
+      while (t != sibling(c))
+        c = sibling(c);
+
+      take_sibling(c);
+
+      if (!sibling(c))
+        link_parent(p, c);
+    }
+
+    if (child(t))
+      make_child(p, pass(t));
+
+    unlink(t);
+
+    assert(!is_bound(t));
+    assert(valid());
+
+    return t;
+  }
+
   T* root() const {
     assert(!empty());
     return root_;
