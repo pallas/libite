@@ -58,25 +58,8 @@ public:
 
     T* m = take_root();
 
-    // pairing pass
-    while (child(m)) {
-      T* c = take_child(m);
-      if (child(m))
-        c = meld(c, take_child(m));
-      link_sibling(c, root_);
-      link_root(c);
-    }
-
-    // melding pass
-    if (root_) {
-      while (sibling(root_)) {
-        T* s = take_siblings(root_);
-        T* r = take_siblings(s);
-        link_root(meld(root_, s));
-        link_sibling(root_, r);
-      }
-
-      assert(!sibling(root_));
+    if (child(m)) {
+      link_root(pass(m));
       link_parent(NULL, root_);
     }
 
@@ -135,6 +118,31 @@ private:
     make_child(foo, bar);
 
     return foo;
+  }
+
+  T* pass(T* t) {
+    assert(child(t));
+    assert(!sibling(t));
+
+    // pairing pass
+    T* r = NULL;
+    while (child(t)) {
+      T* c = take_child(t);
+      if (child(t))
+        c = meld(c, take_child(t));
+      link_sibling(c, r);
+      r = c;
+    }
+    assert(r);
+
+    // melding pass
+    T* ss = take_siblings(r);
+    while (T* s = ss) {
+      ss = take_siblings(ss);
+      r = meld(r, s);
+    }
+
+    return r;
   }
 
   void link_root(T* n) {
