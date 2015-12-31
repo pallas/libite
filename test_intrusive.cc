@@ -95,6 +95,14 @@ main(int, char*[]) {
   queue.enqueue(y);
   stack.push(y);
 
+  std::cout << "xyzzy" << '\t';
+  for (node* i = heap.root() ; i ; i = heap.next(i)) {
+    std::cout << ' ' << i->value;
+    if (i == y)
+        std::cout << '*';
+  }
+  std::cout << std::endl;
+
   {{
     node* z = new node(y->value);
     tree.transplant(y, z);
