@@ -52,6 +52,17 @@ public:
     return *this;
   }
 
+  intrusive_heap & meld(intrusive_heap & that) {
+    assert(this != &that);
+
+    if (T* r = that.take_root())
+      link_root(empty() ? r : meld(root_, r));
+
+    assert(that.empty());
+
+    return *this;
+  }
+
   T* exhume() {
     assert(valid());
     assert(!empty());
