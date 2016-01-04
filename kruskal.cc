@@ -102,7 +102,7 @@ main(int, char* argv[]) {
 
     std::stringstream ss(line);
     std::string from, to;
-    unsigned cost;
+    unsigned cost = 1;
     ss >> from >> to >> cost;
 
     vertex_t* f = vertices.get(from.c_str());
