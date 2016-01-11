@@ -57,34 +57,19 @@ struct vertex_t {
   edge_t::to_edges_t to_edges;
   edge_t::from_edges_t from_edges;
 
-  intrusive_table_link<vertex_t> link;
-  typedef intrusive_table<vertex_t, &vertex_t::link, typeof(vertex_t::id),
+  intrusive_table_link<vertex_t> v_link;
+  typedef intrusive_table<vertex_t, &vertex_t::v_link, typeof(vertex_t::id),
                           &vertex_t::id> vertices_t;
 
-  bool
-  bound() const {
-    return false
-        || link.bound()
-        ;;
-  }
-
-  void kill() { if (!bound()) delete this; }
-};
-
-struct test_t {
-  test_t(vertex_t* v, unsigned d) : vertex(v), cost(d) { }
-
-  vertex_t* vertex;
-  unsigned cost;
-
-  intrusive_heap_link<test_t> link;
-  typedef intrusive_heap<test_t, &test_t::link, typeof(test_t::cost),
-                         &test_t::cost> pq_t;
+  intrusive_heap_link<vertex_t> q_link;
+  typedef intrusive_heap<vertex_t, &vertex_t::q_link, typeof(vertex_t::cost),
+                         &vertex_t::cost> pq_t;
 
   bool
   bound() const {
     return false
-        || link.bound()
+        || v_link.bound()
+        || q_link.bound()
         ;;
   }
 
@@ -139,16 +124,15 @@ main(int, char* argv[]) {
     t->to_edges.insert(e);
   }
 
-  test_t::pq_t pq;
+  vertex_t::pq_t pq;
   if (s) {
     s->cost = 0;
     s->route = s;
-    pq.inhume(new test_t(s, s->cost));
+    pq.inhume(s);
   }
 
   while (!pq.empty()) {
-    test_t* t = pq.exhume();
-    vertex_t* v = t->vertex;
+    vertex_t* v = pq.exhume();
 
     assert(v->route);
     edge_t::from_edges_t & fe = v->from_edges;
@@ -156,13 +140,13 @@ main(int, char* argv[]) {
       assert(v == e->from);
       unsigned cost = e->from->cost + e->cost;
       if (!e->to->route || cost < e->to->cost) {
+        if (e->to->q_link.bound())
+          pq.sift(e->to);
         e->to->cost = cost;
         e->to->route = e->from;
-        pq.inhume(new test_t(e->to, e->to->cost));
+        pq.inhume(e->to);
       }
     }
-
-    t->kill();
   }
 
   for (vertex_t* v = vertices.iterator() ; v ;
