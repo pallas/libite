@@ -149,16 +149,13 @@ main(int, char* argv[]) {
     }
   }
 
-  for (vertex_t* v = vertices.iterator() ; v ;
-       std::cout << std::endl, v = vertices.next(v)) {
-    std::cout << v->id;
+  for (vertex_t* v = vertices.iterator() ; v ; v = vertices.next(v)) {
     if (!v->route)
       continue;
 
-    for (vertex_t* i = v ; s != i ; i = i->route)
-      std::cout << " " << i->route->id;
-
-    std::cout << " " << v->cost;
+    std::cout << v->id << " "
+      << v->route->id << " "
+      << v->cost << std::endl;
   }
 
   vertex_t* v = vertices.iterator();
