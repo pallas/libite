@@ -16,6 +16,7 @@ PROGRAMS := \
 	heapsort \
 	kruskal \
 	ordersort \
+	tarjan \
 	treesort \
 	#
 

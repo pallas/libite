@@ -41,6 +41,9 @@ and the following test programs
    algorithm on the graph, & write edges composing a minimum spanning tree
    to std::cout.
  * ordersort --- Read ints on std::cin, sort via order, & write to std::cout.
+ * tarjan --- Read (from, to) tuples on std::cin, perform Tarjan's algorithm
+   on the graph, & write sets of strongly connected components to std::cout,
+   one set per line.
  * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 
 With assertions enabled, intrusive_heap and intrusive_tree are validated as
