@@ -64,7 +64,9 @@ struct vertex_t {
   void kill() { if (!bound()) delete this; }
 
   bool unify(vertex_t* that) {
-    if (!typed() && !that->typed())
+    if (this == that)
+      return false;
+    else if (!typed() && !that->typed())
       (new set_t)->join(this).join(that);
     else if (!typed())
       set_t::archetype(that)->join(this);
