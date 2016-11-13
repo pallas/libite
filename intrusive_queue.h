@@ -61,6 +61,29 @@ public:
     return t;
   }
 
+  intrusive_queue & chain(intrusive_queue & that, unsigned n) {
+    assert(this != &that);
+    assert(!that.empty());
+
+    T* self = *tail;
+    *tail = that.head;
+
+    for (unsigned i = 0 ; i < n && tail != that.tail ; ++i) {
+      self = *tail;
+      tail = &(self->*link).p;
+    }
+
+    if (tail == that.tail) {
+      that.head = NULL;
+      that.tail = &that.head;
+    } else {
+      that.head = *tail;
+      *tail = self;
+    }
+
+    return *this;
+  }
+
   intrusive_queue & chain(intrusive_queue & that) {
     assert(this != &that);
     assert(!that.empty());
