@@ -4,6 +4,8 @@
 #include "do_not_copy.h"
 #include "intrusive_link.h"
 
+#include "compare.h"
+
 #include <cassert>
 #include <cstddef>
 
@@ -64,6 +66,63 @@ public:
 
     assert(!(t->*link).bound());
     return t;
+  }
+
+  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
+  intrusive_queue & sort() {
+    if (this->empty() || this->head == *this->tail)
+      return *this;
+
+    for (unsigned size = 1 ; ; size *= 2) {
+      intrusive_queue that;
+      while (!this->empty()) {
+        intrusive_queue foo, bar;
+
+        assert(!this->empty());
+        foo.chain(*this, size);
+        assert(!foo.empty());
+
+        if (this->empty()) {
+          if (!that.empty()) {
+            that.chain(foo);
+            break;
+          } else {
+            this->chain(foo);
+            return *this;
+          }
+        }
+
+        assert(!this->empty());
+        bar.chain(*this, size);
+        assert(!bar.empty());
+
+        while (!foo.empty() && !bar.empty())
+          if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
+            that.enqueue(foo.dequeue());
+          else
+            that.enqueue(bar.dequeue());
+
+        assert(!that.empty());
+
+        if (!foo.empty()) {
+          assert(C((*that.tail)->*key, foo.peek()->*key) <= 0);
+          that.chain(foo);
+        } else if (!bar.empty()) {
+          assert(C((*that.tail)->*key, bar.peek()->*key) <= 0);
+          that.chain(bar);
+        }
+      }
+
+      assert(!that.empty());
+      this->chain(that);
+    }
+
+    assert(!"unreachable");
+  }
+
+  template <typename K, K T::*key>
+  intrusive_queue & sort() {
+    return sort<K, key, compare<K> >();
   }
 
   intrusive_queue & chain(intrusive_queue & that, unsigned n) {
