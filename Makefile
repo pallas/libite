@@ -15,6 +15,7 @@ PROGRAMS := \
 	dijkstra \
 	heapsort \
 	kruskal \
+	mergesort \
 	ordersort \
 	tarjan \
 	treesort \
