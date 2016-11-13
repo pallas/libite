@@ -42,6 +42,11 @@ public:
     return head;
   }
 
+  T* last() const {
+    assert(!empty());
+    return *tail;
+  }
+
   T* dequeue() {
     assert(!empty());
 
