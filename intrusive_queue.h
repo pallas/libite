@@ -84,6 +84,33 @@ public:
   }
 
   template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
+  intrusive_queue & merge(intrusive_queue & foo, intrusive_queue & bar) {
+    assert((foo.sorted<K,key,C>()));
+    assert((bar.sorted<K,key,C>()));
+
+    while (!foo.empty() && !bar.empty())
+      if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
+        this->enqueue(foo.dequeue());
+      else
+        this->enqueue(bar.dequeue());
+
+    if (!foo.empty())
+      this->chain(foo);
+
+    if (!bar.empty())
+      this->chain(bar);
+
+    assert(foo.empty());
+    assert(bar.empty());
+    return *this;
+  }
+
+  template <typename K, K T::*key>
+  intrusive_queue & merge(intrusive_queue & foo, intrusive_queue & bar) {
+    return merge<K, key, compare<K> >(foo, bar);
+  }
+
+  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
   intrusive_queue & sort() {
     if (this->empty() || this->head == *this->tail)
       return *this;
@@ -114,21 +141,8 @@ public:
         assert(!bar.empty());
         assert((bar.sorted<K,key,C>()));
 
-        while (!foo.empty() && !bar.empty())
-          if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
-            that.enqueue(foo.dequeue());
-          else
-            that.enqueue(bar.dequeue());
-
+        that.merge<K,key,C>(foo, bar);
         assert(!that.empty());
-
-        if (!foo.empty()) {
-          assert(C((*that.tail)->*key, foo.peek()->*key) <= 0);
-          that.chain(foo);
-        } else if (!bar.empty()) {
-          assert(C((*that.tail)->*key, bar.peek()->*key) <= 0);
-          that.chain(bar);
-        }
       }
 
       assert(!that.empty());
