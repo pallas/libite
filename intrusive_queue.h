@@ -69,6 +69,21 @@ public:
   }
 
   template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
+  bool sorted() const {
+    if (!empty())
+      for (T* i = peek() ; i && next(i) ; i = next(i))
+        if (C(i->*key, next(i)->*key) > 0)
+          return false;
+
+    return true;
+  }
+
+  template <typename K, K T::*key>
+  bool sorted() const {
+    return sorted<K, key, compare<K> >();
+  }
+
+  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
   intrusive_queue & sort() {
     if (this->empty() || this->head == *this->tail)
       return *this;
@@ -81,6 +96,7 @@ public:
         assert(!this->empty());
         foo.chain(*this, size);
         assert(!foo.empty());
+        assert((foo.sorted<K,key,C>()));
 
         if (this->empty()) {
           if (!that.empty()) {
@@ -88,6 +104,7 @@ public:
             break;
           } else {
             this->chain(foo);
+            assert((this->sorted<K,key,C>()));
             return *this;
           }
         }
@@ -95,6 +112,7 @@ public:
         assert(!this->empty());
         bar.chain(*this, size);
         assert(!bar.empty());
+        assert((bar.sorted<K,key,C>()));
 
         while (!foo.empty() && !bar.empty())
           if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
