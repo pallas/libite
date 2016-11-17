@@ -68,94 +68,89 @@ public:
     return t;
   }
 
-  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
-  bool sorted() const {
-    if (!empty())
-      for (T* i = peek() ; i && next(i) ; i = next(i))
-        if (C(i->*key, next(i)->*key) > 0)
-          return false;
+  template <typename K, K T::*key,
+            compare_t (*C)(K const &, K const &) = compare<K> >
+  struct sorter {
 
-    return true;
-  }
+    static
+    bool sorted(const intrusive_queue & q) {
+      if (!q.empty())
+        for (T* i = q.peek() ; i ; i = q.next(i))
+          if (T* n = q.next(i))
+            if (C(i->*key, n->*key) > 0)
+              return false;
 
-  template <typename K, K T::*key>
-  bool sorted() const {
-    return sorted<K, key, compare<K> >();
-  }
-
-  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
-  intrusive_queue & merge(intrusive_queue & foo, intrusive_queue & bar) {
-    assert((foo.sorted<K,key,C>()));
-    assert((bar.sorted<K,key,C>()));
-
-    while (!foo.empty() && !bar.empty())
-      if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
-        this->enqueue(foo.dequeue());
-      else
-        this->enqueue(bar.dequeue());
-
-    if (!foo.empty())
-      this->chain(foo);
-
-    if (!bar.empty())
-      this->chain(bar);
-
-    assert(foo.empty());
-    assert(bar.empty());
-    return *this;
-  }
-
-  template <typename K, K T::*key>
-  intrusive_queue & merge(intrusive_queue & foo, intrusive_queue & bar) {
-    return merge<K, key, compare<K> >(foo, bar);
-  }
-
-  template <typename K, K T::*key, compare_t (*C)(K const &, K const &)>
-  intrusive_queue & sort() {
-    if (this->empty() || this->head == *this->tail)
-      return *this;
-
-    for (unsigned size = 1 ; ; size *= 2) {
-      intrusive_queue that;
-      while (!this->empty()) {
-        intrusive_queue foo, bar;
-
-        assert(!this->empty());
-        foo.chain(*this, size);
-        assert(!foo.empty());
-        assert((foo.sorted<K,key,C>()));
-
-        if (this->empty()) {
-          if (!that.empty()) {
-            that.chain(foo);
-            break;
-          } else {
-            this->chain(foo);
-            assert((this->sorted<K,key,C>()));
-            return *this;
-          }
-        }
-
-        assert(!this->empty());
-        bar.chain(*this, size);
-        assert(!bar.empty());
-        assert((bar.sorted<K,key,C>()));
-
-        that.merge<K,key,C>(foo, bar);
-        assert(!that.empty());
-      }
-
-      assert(!that.empty());
-      this->chain(that);
+      return true;
     }
 
-    assert(!"unreachable");
-  }
+    static
+    intrusive_queue & merge(intrusive_queue & q,
+                           intrusive_queue & foo,
+                           intrusive_queue & bar)
+    {
+      assert(sorted(foo));
+      assert(sorted(bar));
 
-  template <typename K, K T::*key>
-  intrusive_queue & sort() {
-    return sort<K, key, compare<K> >();
-  }
+      while (!foo.empty() && !bar.empty())
+        if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
+          q.enqueue(foo.dequeue());
+        else
+          q.enqueue(bar.dequeue());
+
+      if (!foo.empty())
+        q.chain(foo);
+
+      if (!bar.empty())
+        q.chain(bar);
+
+      assert(foo.empty());
+      assert(bar.empty());
+      return q;
+    }
+
+    static
+    intrusive_queue & sort(intrusive_queue & q) {
+      if (q.empty() || q.peek() == q.last())
+        return q;
+
+      for (unsigned size = 1 ; ; size *= 2) {
+        intrusive_queue that;
+        while (!q.empty()) {
+          intrusive_queue foo, bar;
+
+          assert(!q.empty());
+          foo.chain(q, size);
+          assert(!foo.empty());
+          assert(sorted(foo));
+
+          if (q.empty()) {
+            if (!that.empty()) {
+              that.chain(foo);
+              break;
+            } else {
+              q.chain(foo);
+              assert(sorted(q));
+              return q;
+            }
+          }
+
+          assert(!q.empty());
+          bar.chain(q, size);
+          assert(!bar.empty());
+          assert(sorted(bar));
+
+          merge(that, foo, bar);
+          assert(!that.empty());
+        }
+
+        assert(!that.empty());
+        q.chain(that);
+      }
+
+      assert(!"unreachable");
+    }
+
+  }; // sorter
 
   intrusive_queue & chain(intrusive_queue & that, unsigned n) {
     assert(this != &that);

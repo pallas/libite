@@ -19,6 +19,7 @@ struct node {
   }
 
   typedef intrusive_queue<node, &node::queue_link> queue_t;
+  typedef queue_t::sorter<typeof(value), &node::value> sorter_t;
 };
 
 int
@@ -31,7 +32,7 @@ main(int, char*[]) {
       queue.enqueue(new node(i));
   }
 
-  queue.sort<typeof(node::value), &node::value>();
+  node::sorter_t::sort(queue);
 
   while (!queue.empty()) {
     node* x = queue.dequeue();
