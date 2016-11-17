@@ -73,11 +73,16 @@ public:
   struct sorter {
 
     static
+    compare_t compare(const T* foo, const T* bar) {
+      return C(foo->*key, bar->*key);
+    }
+
+    static
     bool sorted(const intrusive_queue & q) {
       if (!q.empty())
         for (T* i = q.peek() ; i ; i = q.next(i))
           if (T* n = q.next(i))
-            if (C(i->*key, n->*key) > 0)
+            if (compare(i, n) > 0)
               return false;
 
       return true;
@@ -92,7 +97,7 @@ public:
       assert(sorted(bar));
 
       while (!foo.empty() && !bar.empty())
-        if (C(foo.peek()->*key, bar.peek()->*key) <= 0)
+        if (compare(foo.peek(), bar.peek()) <= 0)
           q.enqueue(foo.dequeue());
         else
           q.enqueue(bar.dequeue());
