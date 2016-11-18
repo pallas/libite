@@ -11,7 +11,7 @@
 #include <algorithm>
 
 template <class X>
-class intrusive_heap_link : private intrusive_link<X> {
+class intrusive_heap_link {
 public:
   typedef intrusive_heap_link type;
   template <class T, typename intrusive_heap_link<T>::type T::*link,

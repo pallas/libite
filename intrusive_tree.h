@@ -11,7 +11,7 @@
 #include <algorithm>
 
 template <class X>
-class intrusive_tree_link : private intrusive_link<X> {
+class intrusive_tree_link {
 public:
   typedef intrusive_tree_link type;
   template <class T, typename intrusive_tree_link<T>::type T::*link,
