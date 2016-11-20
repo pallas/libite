@@ -55,9 +55,7 @@ public:
     T* t = head;
     assert((t->*link).bound());
 
-    head = *tail != head
-         ? (head->*link).p
-         : NULL;
+    head = (head->*link).qualified(*tail != head);
 
     if (empty())
       tail = &head;
@@ -197,7 +195,7 @@ public:
 
   T* next(const T* t) const {
     assert((t->*link).bound());
-    return t != *tail ? (t->*link).p : NULL;
+    return (t->*link).qualified(t != *tail);
   }
 
 private:

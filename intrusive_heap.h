@@ -139,7 +139,7 @@ private:
   static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
   static bool is_baby(const T* n) { assert(n); return (n->*link).s.tagged(); }
 
-  static T* sibling(const T* n) { assert(n); return !is_baby(n) ? (n->*link).s.p : NULL; }
+  static T* sibling(const T* n) { assert(n); return (n->*link).s.qualified(!is_baby(n)); }
   static T* child(const T* n) { assert(n); return (n->*link).c.p; }
 
   static T* parent(const T* n) {

@@ -110,7 +110,7 @@ public:
   intrusive_set & dissolve(dissolver_t d = NULL) {
     while (T* t = head) {
       assert(typed(t));
-      head = t != *tail ? (t->*link).n.p : NULL;
+      head = (t->*link).n.qualified(t != *tail);
       (t->*link).p.p = NULL;
       (t->*link).n.p = NULL;
       assert(!typed(t));
@@ -129,7 +129,7 @@ public:
 
   T* next(const T* t) const {
     assert(contains(t));
-    return t != *tail ? (t->*link).n.p : NULL;
+    return (t->*link).n.qualified(t != *tail);
   }
 
 private:

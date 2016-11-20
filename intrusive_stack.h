@@ -57,7 +57,7 @@ public:
 
   T* next(const T* t) const {
     assert((t->*link).bound());
-    return (t->*link).p != sentinel() ? (t->*link).p : NULL;
+    return (t->*link).guarded(sentinel());
   }
 
 private:
