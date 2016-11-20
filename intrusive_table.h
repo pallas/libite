@@ -29,8 +29,8 @@ class intrusive_table_bucket : private intrusive_link<X> {
             hash_t (*H)(K const &)>
     friend class intrusive_table;
 private:
-  X* sentinal() { return reinterpret_cast<X*>(this); }
-  const X* sentinal() const { return reinterpret_cast<const X*>(this); }
+  X* sentinel() { return reinterpret_cast<X*>(this); }
+  const X* sentinel() const { return reinterpret_cast<const X*>(this); }
 };
 
 template <class T, typename intrusive_table_link<T>::type T::*link,
@@ -51,7 +51,7 @@ public:
     assert(buckets_ || 0 == n_buckets_);
 
     for (size_t i = 0 ; i < n_buckets_ ; ++i)
-      if (buckets_[i].p != buckets_[i].sentinal())
+      if (buckets_[i].p != buckets_[i].sentinel())
         return false;
 
     return true;
@@ -123,7 +123,7 @@ public:
 
     bucket_t & b = buckets_[index(k)];
 
-    for (T ** c = &b.p ; *c != b.sentinal() ; c = &((*c)->*link).p)
+    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*link).p)
       if (0 == C(k, (*c)->*key))
           return c == &b.p ? *c : insert_at(&b.p, take_next(c));
 
@@ -133,7 +133,7 @@ public:
   bool is_member(const T* t) const {
     bucket_t & b = buckets_[index(t)];
 
-    for (T ** c = &b.p ; *c != b.sentinal() ; c = &((*c)->*link).p)
+    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*link).p)
       if (t == *c)
         return true;
 
@@ -142,7 +142,7 @@ public:
 
   T* iterator() const {
     for (size_t i = 0 ; i < n_buckets_ ; ++i)
-      if (buckets_[i].p != buckets_[i].sentinal())
+      if (buckets_[i].p != buckets_[i].sentinel())
         return buckets_[i].p;
 
     return NULL;
@@ -156,7 +156,7 @@ public:
     if (bucket_t* b = is_bucket(n)) {
       size_t o = b - buckets_;
       for (size_t i = o + 1; i < n_buckets_ ; ++i)
-        if (buckets_[i].p != buckets_[i].sentinal())
+        if (buckets_[i].p != buckets_[i].sentinel())
           return buckets_[i].p;
 
       return NULL;
@@ -222,11 +222,11 @@ private:
 
   void take_all(bucket_t & ts) {
     assert(!ts.p);
-    ts.p = ts.sentinal();
+    ts.p = ts.sentinel();
 
     for (size_t i = 0 ; i < n_buckets_ ; ++i) {
       bucket_t & b = buckets_[i];
-      while (b.p != b.sentinal())
+      while (b.p != b.sentinel())
         insert_at(&ts.p, take_next(&b.p));
     }
   }
@@ -234,17 +234,17 @@ private:
   void give_all(bucket_t & ts) {
     assert(ts.p);
 
-    while (ts.p != ts.sentinal())
+    while (ts.p != ts.sentinel())
       set(take_next(&ts.p));
 
-    assert(ts.p == ts.sentinal());
+    assert(ts.p == ts.sentinel());
     ts.p = NULL;
   }
 
   void set_buckets() {
     for (size_t i = 0 ; i < n_buckets_ ; ++i) {
       assert(!buckets_[i].p);
-      buckets_[i].p = buckets_[i].sentinal();
+      buckets_[i].p = buckets_[i].sentinel();
     }
     assert(empty());
   }
@@ -252,7 +252,7 @@ private:
   void reset_buckets() {
     assert(empty());
     for (size_t i = 0 ; i < n_buckets_ ; ++i) {
-      assert(buckets_[i].p == buckets_[i].sentinal());
+      assert(buckets_[i].p == buckets_[i].sentinel());
       buckets_[i].p = NULL;
     }
   }
