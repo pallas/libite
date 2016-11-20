@@ -11,6 +11,9 @@ struct intrusive_link {
   ~intrusive_link() { assert(!p); }
 
   T* p;
+
+  T* qualified(bool predicate) const { return (T*)(intptr_t(p) & -intptr_t(predicate)); }
+  T* guarded(const T* sentinel) const { return qualified(p != sentinel); }
 };
 
 template <class T, intptr_t TAG = 0x1>
