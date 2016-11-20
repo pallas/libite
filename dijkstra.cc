@@ -12,7 +12,7 @@
 
 #include "compare.h"
 #include "intrusive_heap.h"
-#include "intrusive_order.h"
+#include "intrusive_queue.h"
 #include "intrusive_table.h"
 
 struct vertex_t;
@@ -24,18 +24,13 @@ struct edge_t {
   vertex_t* to;
   unsigned cost;
 
-  intrusive_order_link<edge_t> to_link;
-  typedef intrusive_order<edge_t, &edge_t::to_link, typeof(edge_t::cost),
-                          &edge_t::cost> to_edges_t;
-
-  intrusive_order_link<edge_t> from_link;
-  typedef intrusive_order<edge_t, &edge_t::from_link, typeof(edge_t::cost),
-                          &edge_t::cost> from_edges_t;
+  intrusive_queue_link<edge_t> from_link;
+  typedef intrusive_queue<edge_t, &edge_t::from_link> from_edges_t;
+  typedef from_edges_t::sorter<typeof(edge_t::cost), &edge_t::cost> from_edges_sorter;
 
   bool
   bound() const {
     return false
-        || to_link.bound()
         || from_link.bound()
         ;;
   }
@@ -54,7 +49,6 @@ struct vertex_t {
   unsigned cost;
   vertex_t* route;
 
-  edge_t::to_edges_t to_edges;
   edge_t::from_edges_t from_edges;
 
   intrusive_table_link<vertex_t> v_link;
@@ -120,9 +114,11 @@ main(int, char* argv[]) {
       s = t;
 
     edge_t* e = new edge_t(f, t, cost);
-    f->from_edges.insert(e);
-    t->to_edges.insert(e);
+    f->from_edges.enqueue(e);
   }
+
+  for (vertex_t* v = vertices.iterator() ; v ; v = vertices.next(v))
+    edge_t::from_edges_sorter::sort(v->from_edges);
 
   vertex_t::pq_t pq;
   if (s) {
@@ -160,10 +156,8 @@ main(int, char* argv[]) {
 
   vertex_t* v = vertices.iterator();
   while (v) {
-    while (!v->to_edges.empty())
-      v->to_edges.remove()->kill();
     while (!v->from_edges.empty())
-      v->from_edges.remove()->kill();
+      v->from_edges.dequeue()->kill();
     vertex_t* x = vertices.next(v);
     std::swap(x, v);
     vertices.bus(x)->kill();
