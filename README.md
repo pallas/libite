@@ -9,9 +9,8 @@ libraries.
 The following container templates are currently implemented
 
  * intrusive_heap --- Pairing heap implementing inhume & exhume.
- * intrusive_order --- Sorted container implementing insert & delete with
-   optimized inserts at the back as well as efficient merge.
- * intrusive_queue --- FIFO container implementing enqueue & dequeue.
+ * intrusive_queue --- FIFO container implementing enqueue & dequeue, plus
+   merge sort. Replaces intrusive_order.
  * intrusive_set --- Disjoint set implementing join, archetype, & dissolve.
  * intrusive_stack --- LIFO container implementing push & pop.
  * intrusive_table --- Chained hash table implementing set, get, & bus; user
@@ -40,7 +39,8 @@ and the following test programs
  * kruskal --- Read (from, to, cost) tuples on std::cin, perform Kruskal's
    algorithm on the graph, & write edges composing a minimum spanning tree
    to std::cout.
- * ordersort --- Read ints on std::cin, sort via order, & write to std::cout.
+ * mergesort --- Read ints on std::cin, sort via queue::sorter, & write to
+   std::cout.
  * tarjan --- Read (from, to) tuples on std::cin, perform Tarjan's algorithm
    on the graph, & write sets of strongly connected components to std::cout,
    one set per line.
