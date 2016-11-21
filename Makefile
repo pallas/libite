@@ -1,5 +1,8 @@
 default: all
 
+PROJECT := lite
+PREFIX ?= /usr/local
+
 DEBUG ?= -g -ggdb -DDEBUG
 ifeq ($(DEBUG),)
 	override DEBUG := -DNDEBUG -O2
@@ -19,6 +22,8 @@ PROGRAMS := \
 	tarjan \
 	treesort \
 	#
+
+HEADERS := $(wildcard *.h)
 
 TESTS := \
 	test_intrusive \
@@ -51,5 +56,10 @@ $(RUN_TESTS) : run/%: %
 .PHONY: clean
 clean:
 	rm -rf $(PROGRAMS) $(TESTS) $(OBJECTS) $(DEPENDS)
+
+.PHONY: install
+install: all
+	install -D -m 0644 -t $(PREFIX)/include/$(PROJECT) $(HEADERS)
+	install -D -m 0755 -t $(PREFIX)/bin $(PROGRAMS)
 
 #
