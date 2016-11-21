@@ -10,10 +10,10 @@
 
 #include <unistd.h>
 
-#include "intrusive_set.h"
-#include "intrusive_heap.h"
-#include "intrusive_table.h"
-#include "intrusive_stack.h"
+#include "set.h"
+#include "heap.h"
+#include "table.h"
+#include "stack.h"
 
 struct vertex_t;
 
@@ -23,8 +23,8 @@ struct edge_t {
   vertex_t* from;
   vertex_t* to;
 
-  intrusive_stack_link<edge_t> from_link;
-  typedef intrusive_stack<edge_t, &edge_t::from_link> from_edges_t;
+  lite::stack_link<edge_t> from_link;
+  typedef lite::stack<edge_t, &edge_t::from_link> from_edges_t;
 
   bool
   bound() const {
@@ -47,15 +47,14 @@ struct vertex_t {
 
   edge_t::from_edges_t from_edges;
 
-  intrusive_table_link<vertex_t> table_link;
-  typedef intrusive_table<vertex_t, &vertex_t::table_link,
-                          typeof(vertex_t::id), &vertex_t::id> table_t;
+  lite::table_link<vertex_t> table_link;
+  typedef lite::table<vertex_t, &vertex_t::table_link, typeof(vertex_t::id), &vertex_t::id> table_t;
 
-  intrusive_stack_link<vertex_t> stack_link;
-  typedef intrusive_stack<vertex_t, &vertex_t::stack_link> stack_t;
+  lite::stack_link<vertex_t> stack_link;
+  typedef lite::stack<vertex_t, &vertex_t::stack_link> stack_t;
 
-  intrusive_set_link<vertex_t> set_link;
-  typedef intrusive_set<vertex_t, &vertex_t::set_link> set_t;
+  lite::set_link<vertex_t> set_link;
+  typedef lite::set<vertex_t, &vertex_t::set_link> set_t;
 
   bool typed() const { return set_t::typed(this); }
   set_t* archetype() const { return set_t::archetype(this); }

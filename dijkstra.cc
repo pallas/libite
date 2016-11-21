@@ -11,9 +11,9 @@
 #include <unistd.h>
 
 #include <lace/compare.h>
-#include "intrusive_heap.h"
-#include "intrusive_queue.h"
-#include "intrusive_table.h"
+#include "heap.h"
+#include "queue.h"
+#include "table.h"
 
 struct vertex_t;
 
@@ -24,8 +24,8 @@ struct edge_t {
   vertex_t* to;
   unsigned cost;
 
-  intrusive_queue_link<edge_t> from_link;
-  typedef intrusive_queue<edge_t, &edge_t::from_link> from_edges_t;
+  lite::queue_link<edge_t> from_link;
+  typedef lite::queue<edge_t, &edge_t::from_link> from_edges_t;
   typedef from_edges_t::sorter<typeof(edge_t::cost), &edge_t::cost> from_edges_sorter;
 
   bool
@@ -51,13 +51,11 @@ struct vertex_t {
 
   edge_t::from_edges_t from_edges;
 
-  intrusive_table_link<vertex_t> v_link;
-  typedef intrusive_table<vertex_t, &vertex_t::v_link, typeof(vertex_t::id),
-                          &vertex_t::id> vertices_t;
+  lite::table_link<vertex_t> v_link;
+  typedef lite::table<vertex_t, &vertex_t::v_link, typeof(vertex_t::id), &vertex_t::id> vertices_t;
 
-  intrusive_heap_link<vertex_t> q_link;
-  typedef intrusive_heap<vertex_t, &vertex_t::q_link, typeof(vertex_t::cost),
-                         &vertex_t::cost> pq_t;
+  lite::heap_link<vertex_t> q_link;
+  typedef lite::heap<vertex_t, &vertex_t::q_link, typeof(vertex_t::cost), &vertex_t::cost> pq_t;
 
   bool
   bound() const {

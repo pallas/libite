@@ -3,13 +3,13 @@
 
 #include <unistd.h>
 
-#include "intrusive_heap.h"
+#include "heap.h"
 
 struct node {
   const char * value;
   node(const char * v) : value(v) { }
 
-  intrusive_heap_link<node> heap_link;
+  lite::heap_link<node> heap_link;
 
   bool
   bound() const {
@@ -18,7 +18,7 @@ struct node {
         ;;
   }
 
-  typedef intrusive_heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
+  typedef lite::heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
 };
 
 int

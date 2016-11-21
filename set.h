@@ -1,18 +1,20 @@
-#ifndef INTRUSIVE_SET_H
-#define INTRUSIVE_SET_H
+#ifndef LITE__SET_H
+#define LITE__SET_H
 
 #include <lace/do_not_copy.h>
-#include "intrusive_link.h"
+#include "link.h"
 
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
 
+namespace lite {
+
 template <class X>
-struct intrusive_set_link {
-  typedef intrusive_set_link type;
-  template <class T, typename intrusive_set_link<T>::type T::*link>
-    friend class intrusive_set;
+struct set_link {
+  typedef set_link type;
+  template <class T, typename set_link<T>::type T::*L>
+    friend class set;
 
   bool bound() const {
     assert(p.p || !n.p);
@@ -20,32 +22,32 @@ struct intrusive_set_link {
   }
 
 private:
-  intrusive_link_tag<X> p;
-  intrusive_link<X> n;
+  link_tag<X> p;
+  link<X> n;
 };
 
-template <class T, typename intrusive_set_link<T>::type T::*link>
-class intrusive_set : public lace::do_not_copy {
+template <class T, typename set_link<T>::type T::*L>
+class set : public lace::do_not_copy {
 public:
-  intrusive_set() : head(NULL), tail(&head), rank(0) { }
-  ~intrusive_set() { assert(empty()); }
+  set() : head(NULL), tail(&head), rank(0) { }
+  ~set() { assert(empty()); }
 
   bool empty() const { return !head; }
 
-  intrusive_set & join(T* t) {
+  set & join(T* t) {
     assert(!typed(t));
     assert(!empty() || &head == tail);
 
     if (!empty()) {
-      (t->*link).p.p = head;
+      (t->*L).p.p = head;
     } else {
       if (!rank)
         ++rank;
-      (t->*link).p.tag(reinterpret_cast<T*>(this));
+      (t->*L).p.tag(reinterpret_cast<T*>(this));
     }
 
     *tail = t;
-    tail = &(t->*link).n.p;
+    tail = &(t->*L).n.p;
     *tail = t;
 
     assert(typed(t));
@@ -53,19 +55,19 @@ public:
     return *this;
   }
 
-  static bool typed(const T* t) { return (t->*link).bound(); }
+  static bool typed(const T* t) { return (t->*L).bound(); }
 
-  static intrusive_set* archetype(const T* t) {
+  static set* archetype(const T* t) {
     assert(typed(t));
 
-    while (!(t->*link).p.tagged()) {
-      const T* p = (t->*link).p.p;
-      if (!(p->*link).p.tagged()) // compress path
-        (const_cast<T*>(t)->*link).p.p = (p->*link).p.p;
+    while (!(t->*L).p.tagged()) {
+      const T* p = (t->*L).p.p;
+      if (!(p->*L).p.tagged()) // compress path
+        (const_cast<T*>(t)->*L).p.p = (p->*L).p.p;
       t = p;
     }
 
-    return reinterpret_cast<intrusive_set*>((t->*link).p.tagless());
+    return reinterpret_cast<set*>((t->*L).p.tagless());
   }
 
   bool contains(const T* t) const {
@@ -73,7 +75,7 @@ public:
     return this == archetype(t);
   }
 
-  intrusive_set* conjoin(intrusive_set* that) {
+  set* conjoin(set* that) {
     assert(this != that);
 
     if (that->empty())
@@ -85,13 +87,13 @@ public:
       std::swap(tail, that->tail);
       std::swap(rank, that->rank);
 
-      (head->*link).p.tag(reinterpret_cast<T*>(this));
+      (head->*L).p.tag(reinterpret_cast<T*>(this));
     } else if (rank == that->rank)
       ++rank;
 
     if (!that->empty()) {
-      assert((head->*link).p.tagged());
-      (that->head->*link).p.p = head;
+      assert((head->*L).p.tagged());
+      (that->head->*L).p.p = head;
 
       *tail = that->head;
       tail = that->tail;
@@ -107,12 +109,12 @@ public:
 
   typedef void (T::*dissolver_t)();
 
-  intrusive_set & dissolve(dissolver_t d = NULL) {
+  set & dissolve(dissolver_t d = NULL) {
     while (T* t = head) {
       assert(typed(t));
-      head = (t->*link).n.qualified(t != *tail);
-      (t->*link).p.p = NULL;
-      (t->*link).n.p = NULL;
+      head = (t->*L).n.qualified(t != *tail);
+      (t->*L).p.p = NULL;
+      (t->*L).n.p = NULL;
       assert(!typed(t));
       if (d)
         (t->*d)();
@@ -129,7 +131,7 @@ public:
 
   T* next(const T* t) const {
     assert(contains(t));
-    return (t->*link).n.qualified(t != *tail);
+    return (t->*L).n.qualified(t != *tail);
   }
 
 private:
@@ -139,4 +141,6 @@ private:
   unsigned rank;
 };
 
-#endif//INTRUSIVE_SET_H
+} // namespace lite
+
+#endif//LITE__SET_H

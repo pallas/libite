@@ -1,8 +1,8 @@
-#ifndef INTRUSIVE_TABLE_H
-#define INTRUSIVE_TABLE_H
+#ifndef LITE__TABLE_H
+#define LITE__TABLE_H
 
 #include <lace/do_not_copy.h>
-#include "intrusive_link.h"
+#include "link.h"
 
 #include <lace/hash.h>
 #include <lace/compare.h>
@@ -11,41 +11,43 @@
 #include <cstddef>
 #include <algorithm>
 
+namespace lite {
+
 template <class X>
-struct intrusive_table_link : private intrusive_link<X> {
-  typedef intrusive_table_link type;
-  template <class T, typename intrusive_table_link<T>::type T::*link,
+struct table_link : private link<X> {
+  typedef table_link type;
+  template <class T, typename table_link<T>::type T::*L,
             typename K, K T::*key, lace::compare_t (*C)(K const &, K const &),
             lace::hash_t (*H)(K const &)>
-    friend class intrusive_table;
+    friend class table;
 
-  bool bound() const { return intrusive_link<X>::p; }
+  bool bound() const { return link<X>::p; }
 };
 
 template <class X>
-class intrusive_table_bucket : private intrusive_link<X> {
-  template <class T, typename intrusive_table_link<T>::type T::*link,
+class table_bucket : private link<X> {
+  template <class T, typename table_link<T>::type T::*L,
             typename K, K T::*key, lace::compare_t (*C)(K const &, K const &),
             lace::hash_t (*H)(K const &)>
-    friend class intrusive_table;
+    friend class table;
 private:
   X* sentinel() { return reinterpret_cast<X*>(this); }
   const X* sentinel() const { return reinterpret_cast<const X*>(this); }
 };
 
-template <class T, typename intrusive_table_link<T>::type T::*link,
+template <class T, typename table_link<T>::type T::*L,
           typename K, K T::*key,
           lace::compare_t (*C)(K const &, K const &) = lace::compare<K>,
           lace::hash_t (*H)(K const &) = lace::hash<K> >
-class intrusive_table : public lace::do_not_copy {
+class table : public lace::do_not_copy {
 public:
-  typedef intrusive_table_bucket<T> bucket_t;
+  typedef table_bucket<T> bucket_t;
 
-  intrusive_table(bucket_t bs[] = NULL, const size_t n = 0)
+  table(bucket_t bs[] = NULL, const size_t n = 0)
     : buckets_(bs), n_buckets_(n)
   { assert(buckets_ || 0 == n_buckets_); set_buckets(); }
 
-  ~intrusive_table() { assert(empty()); reset_buckets(); }
+  ~table() { assert(empty()); reset_buckets(); }
 
   bool empty() const {
     assert(buckets_ || 0 == n_buckets_);
@@ -81,7 +83,7 @@ public:
     return rehash(NULL, 0);
   }
 
-  intrusive_table & set(T* t) {
+  table & set(T* t) {
     assert(buckets_);
     assert(!is_bound(t));
 
@@ -101,7 +103,7 @@ public:
 
     T ** c = &b.p;
     while (t != *c)
-      c = &((*c)->*link).p;
+      c = &((*c)->*L).p;
 
     take_next(c);
 
@@ -123,7 +125,7 @@ public:
 
     bucket_t & b = buckets_[index(k)];
 
-    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*link).p)
+    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*L).p)
       if (0 == C(k, (*c)->*key))
           return c == &b.p ? *c : insert_at(&b.p, take_next(c));
 
@@ -133,7 +135,7 @@ public:
   bool is_member(const T* t) const {
     bucket_t & b = buckets_[index(t)];
 
-    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*link).p)
+    for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*L).p)
       if (t == *c)
         return true;
 
@@ -151,7 +153,7 @@ public:
   T* next(const T* t) const {
     assert(is_member(t));
 
-    T* n = (t->*link).p;
+    T* n = (t->*L).p;
 
     if (bucket_t* b = is_bucket(n)) {
       size_t o = b - buckets_;
@@ -178,7 +180,7 @@ private:
   bucket_t * buckets_;
   size_t n_buckets_;
 
-  static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
+  static bool is_bound(const T* n) { assert(n); return (n->*L).bound(); }
 
   lace::hash_t index(const K & k) const { return H(k) % n_buckets_; }
   lace::hash_t index(const T* n) const { assert(n); return index(n->*key); }
@@ -196,8 +198,8 @@ private:
     T* t = *p;
     assert(is_bound(t));
 
-    *p = (t->*link).p;
-    (t->*link).p = NULL;
+    *p = (t->*L).p;
+    (t->*L).p = NULL;
 
     assert(!is_bound(t));
 
@@ -212,7 +214,7 @@ private:
     assert(t != *p);
     assert(!is_bound(t));
 
-    (t->*link).p = *p;
+    (t->*L).p = *p;
     *p = t;
 
     assert(is_bound(t));
@@ -258,4 +260,6 @@ private:
   }
 };
 
-#endif//INTRUSIVE_TABLE_H
+} // namespace lite
+
+#endif//LITE__TABLE_H

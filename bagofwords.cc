@@ -5,16 +5,16 @@
 
 #include <unistd.h>
 
-#include "intrusive_heap.h"
-#include "intrusive_table.h"
+#include "heap.h"
+#include "table.h"
 
 struct node {
   unsigned count;
   const char * string;
   node(const char * s) : count(0), string(s) { }
 
-  intrusive_heap_link<node> heap_link;
-  intrusive_table_link<node> table_link;
+  lite::heap_link<node> heap_link;
+  lite::table_link<node> table_link;
 
   bool
   bound() const {
@@ -25,8 +25,8 @@ struct node {
 
   void kill() { if (!bound()) delete this; }
 
-  typedef intrusive_heap<node, &node::heap_link, typeof(node::count), &node::count, lace::reverse_compare<typeof(node::count)> > heap_t;
-  typedef intrusive_table<node, &node::table_link, typeof(node::string), &node::string> table_t;
+  typedef lite::heap<node, &node::heap_link, typeof(node::count), &node::count, lace::reverse_compare<typeof(node::count)> > heap_t;
+  typedef lite::table<node, &node::table_link, typeof(node::string), &node::string> table_t;
 };
 
 int

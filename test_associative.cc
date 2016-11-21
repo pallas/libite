@@ -4,15 +4,15 @@
 
 #include <unistd.h>
 
-#include "intrusive_heap.h"
-#include "intrusive_table.h"
+#include "heap.h"
+#include "table.h"
 
 struct node {
   int value;
   node(int v) : value(v) { }
 
-  intrusive_heap_link<node> heap_link;
-  intrusive_table_link<node> table_link;
+  lite::heap_link<node> heap_link;
+  lite::table_link<node> table_link;
 
   bool
   bound() const {
@@ -24,8 +24,8 @@ struct node {
 
   void kill() { if (!bound()) delete this; }
 
-  typedef intrusive_heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
-  typedef intrusive_table<node, &node::table_link, typeof(node::value), &node::value> table_t;
+  typedef lite::heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
+  typedef lite::table<node, &node::table_link, typeof(node::value), &node::value> table_t;
 };
 
 int

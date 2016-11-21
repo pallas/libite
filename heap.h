@@ -1,8 +1,8 @@
-#ifndef INTRUSIVE_HEAP_H
-#define INTRUSIVE_HEAP_H
+#ifndef LITE__HEAP_H
+#define LITE__HEAP_H
 
 #include <lace/do_not_copy.h>
-#include "intrusive_link.h"
+#include "link.h"
 
 #include <lace/compare.h>
 
@@ -10,13 +10,15 @@
 #include <cstddef>
 #include <algorithm>
 
+namespace lite {
+
 template <class X>
-class intrusive_heap_link {
+class heap_link {
 public:
-  typedef intrusive_heap_link type;
-  template <class T, typename intrusive_heap_link<T>::type T::*link,
+  typedef heap_link type;
+  template <class T, typename heap_link<T>::type T::*L,
             typename K, K T::*key, lace::compare_t (*C)(K const &, K const &)>
-    friend class intrusive_heap;
+    friend class heap;
 
   bool bound() const {
     assert(s.p || !c.p);
@@ -24,21 +26,21 @@ public:
   }
 
 private:
-  intrusive_link_tag<X> s;
-  intrusive_link<X> c;
+  link_tag<X> s;
+  link<X> c;
 };
 
-template <class T, typename intrusive_heap_link<T>::type T::*link,
+template <class T, typename heap_link<T>::type T::*L,
           typename K, K T::*key, lace::compare_t (*C)(K const &, K const &) = lace::compare<K> >
-class intrusive_heap : public lace::do_not_copy {
+class heap : public lace::do_not_copy {
 public:
 
-  intrusive_heap() : root_(NULL) { }
-  ~intrusive_heap() { assert(empty()); }
+  heap() : root_(NULL) { }
+  ~heap() { assert(empty()); }
 
   bool empty() const { return !root_; }
 
-  intrusive_heap & inhume(T* t) {
+  heap & inhume(T* t) {
     assert(valid());
     assert(!is_bound(t));
 
@@ -52,7 +54,7 @@ public:
     return *this;
   }
 
-  intrusive_heap & meld(intrusive_heap & that) {
+  heap & meld(heap & that) {
     assert(this != &that);
 
     if (T* r = that.take_root())
@@ -136,17 +138,17 @@ public:
 private:
   T * root_;
 
-  static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
-  static bool is_baby(const T* n) { assert(n); return (n->*link).s.tagged(); }
+  static bool is_bound(const T* n) { assert(n); return (n->*L).bound(); }
+  static bool is_baby(const T* n) { assert(n); return (n->*L).s.tagged(); }
 
-  static T* sibling(const T* n) { assert(n); return (n->*link).s.qualified(!is_baby(n)); }
-  static T* child(const T* n) { assert(n); return (n->*link).c.p; }
+  static T* sibling(const T* n) { assert(n); return (n->*L).s.qualified(!is_baby(n)); }
+  static T* child(const T* n) { assert(n); return (n->*L).c.p; }
 
   static T* parent(const T* n) {
     assert(n);
     while (const T* s = sibling(n))
       n = s;
-    return (n->*link).s.tagless();
+    return (n->*L).s.tagless();
   }
 
   T* meld(T* foo, T* bar) {
@@ -194,17 +196,17 @@ private:
 
   void link_parent(T* p, T* c) {
     assert(c);
-    (c->*link).s.tag(p);
+    (c->*L).s.tag(p);
   }
 
   void link_child(T* p, T* c) {
     assert(p);
-    (p->*link).c.p = c;
+    (p->*L).c.p = c;
   }
 
   void link_sibling(T* n, T* s) {
     assert(n);
-    (n->*link).s.p = s;
+    (n->*L).s.p = s;
   }
 
   void make_child(T* p, T* c) {
@@ -223,7 +225,7 @@ private:
     assert(!sibling(n));
     assert(!child(n));
 
-    (n->*link).s.p = NULL;
+    (n->*L).s.p = NULL;
   }
 
   T* take_root() {
@@ -285,4 +287,6 @@ private:
 
 };
 
-#endif//INTRUSIVE_HEAP_H
+} // namespace lite
+
+#endif//LITE__HEAP_H

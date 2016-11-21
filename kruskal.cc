@@ -10,9 +10,9 @@
 
 #include <unistd.h>
 
-#include "intrusive_set.h"
-#include "intrusive_heap.h"
-#include "intrusive_table.h"
+#include "set.h"
+#include "heap.h"
+#include "table.h"
 
 struct vertex_t;
 
@@ -23,9 +23,8 @@ struct edge_t {
   vertex_t* to;
   unsigned cost;
 
-  intrusive_heap_link<edge_t> link;
-  typedef intrusive_heap<edge_t, &edge_t::link, typeof(edge_t::cost),
-                         &edge_t::cost> heap_t;
+  lite::heap_link<edge_t> link;
+  typedef lite::heap<edge_t, &edge_t::link, typeof(edge_t::cost), &edge_t::cost> heap_t;
 
   bool
   bound() const {
@@ -43,12 +42,11 @@ struct vertex_t {
 
   const char* id;
 
-  intrusive_table_link<vertex_t> table_link;
-  typedef intrusive_table<vertex_t, &vertex_t::table_link,
-                          typeof(vertex_t::id), &vertex_t::id> table_t;
+  lite::table_link<vertex_t> table_link;
+  typedef lite::table<vertex_t, &vertex_t::table_link, typeof(vertex_t::id), &vertex_t::id> table_t;
 
-  intrusive_set_link<vertex_t> set_link;
-  typedef intrusive_set<vertex_t, &vertex_t::set_link> set_t;
+  lite::set_link<vertex_t> set_link;
+  typedef lite::set<vertex_t, &vertex_t::set_link> set_t;
 
   bool typed() const { return set_t::typed(this); }
   set_t* archetype() const { return set_t::archetype(this); }

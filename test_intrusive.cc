@@ -4,21 +4,21 @@
 
 #include <unistd.h>
 
-#include "intrusive_set.h"
-#include "intrusive_tree.h"
-#include "intrusive_heap.h"
-#include "intrusive_stack.h"
-#include "intrusive_queue.h"
+#include "set.h"
+#include "tree.h"
+#include "heap.h"
+#include "stack.h"
+#include "queue.h"
 
 struct node {
   int value;
   node(int v) : value(v) { }
 
-  intrusive_set_link<node> set_link;
-  intrusive_tree_link<node> tree_link;
-  intrusive_heap_link<node> heap_link;
-  intrusive_queue_link<node> queue_link;
-  intrusive_stack_link<node> stack_link;
+  lite::set_link<node> set_link;
+  lite::tree_link<node> tree_link;
+  lite::heap_link<node> heap_link;
+  lite::queue_link<node> queue_link;
+  lite::stack_link<node> stack_link;
 
   bool
   bound() const {
@@ -33,11 +33,11 @@ struct node {
 
   void kill() { if (!bound()) delete this; }
 
-  typedef intrusive_set<node, &node::set_link> set_t;
-  typedef intrusive_tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
-  typedef intrusive_heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
-  typedef intrusive_queue<node, &node::queue_link> queue_t;
-  typedef intrusive_stack<node, &node::stack_link> stack_t;
+  typedef lite::set<node, &node::set_link> set_t;
+  typedef lite::tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
+  typedef lite::heap<node, &node::heap_link, typeof(node::value), &node::value> heap_t;
+  typedef lite::queue<node, &node::queue_link> queue_t;
+  typedef lite::stack<node, &node::stack_link> stack_t;
 };
 
 int

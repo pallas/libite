@@ -3,13 +3,13 @@
 
 #include <unistd.h>
 
-#include "intrusive_tree.h"
+#include "tree.h"
 
 struct node {
   long value;
   node(int v) : value(v) { }
 
-  intrusive_tree_link<node> tree_link;
+  lite::tree_link<node> tree_link;
 
   bool
   bound() const {
@@ -18,7 +18,7 @@ struct node {
         ;;
   }
 
-  typedef intrusive_tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
+  typedef lite::tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
 };
 
 int

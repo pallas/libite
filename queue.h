@@ -1,40 +1,42 @@
-#ifndef INTRUSIVE_QUEUE_H
-#define INTRUSIVE_QUEUE_H
+#ifndef LITE__QUEUE_H
+#define LITE__QUEUE_H
 
 #include <lace/do_not_copy.h>
-#include "intrusive_link.h"
+#include "link.h"
 
 #include <lace/compare.h>
 
 #include <cassert>
 #include <cstddef>
 
-template <class X>
-struct intrusive_queue_link : private intrusive_link<X> {
-  typedef intrusive_queue_link type;
-  template <class T, typename intrusive_queue_link<T>::type T::*link>
-    friend class intrusive_queue;
+namespace lite {
 
-  bool bound() const { return intrusive_link<X>::p; }
+template <class X>
+struct queue_link : private link<X> {
+  typedef queue_link type;
+  template <class T, typename queue_link<T>::type T::*L>
+    friend class queue;
+
+  bool bound() const { return link<X>::p; }
 };
 
-template <class T, typename intrusive_queue_link<T>::type T::*link>
-class intrusive_queue : public lace::do_not_copy {
+template <class T, typename queue_link<T>::type T::*L>
+class queue : public lace::do_not_copy {
 public:
-  intrusive_queue() : head(NULL), tail(&head) { }
-  ~intrusive_queue() { assert(empty()); }
+  queue() : head(NULL), tail(&head) { }
+  ~queue() { assert(empty()); }
 
   bool empty() const { return !head; }
 
-  intrusive_queue & enqueue(T* t) {
-    assert(!(t->*link).bound());
+  queue & enqueue(T* t) {
+    assert(!(t->*L).bound());
     assert(!empty() || &head == tail);
 
     *tail = t;
-    tail = &(t->*link).p;
+    tail = &(t->*L).p;
     *tail = t;
 
-    assert((t->*link).bound());
+    assert((t->*L).bound());
     assert(!empty());
     return *this;
   }
@@ -53,16 +55,16 @@ public:
     assert(!empty());
 
     T* t = head;
-    assert((t->*link).bound());
+    assert((t->*L).bound());
 
-    head = (head->*link).qualified(*tail != head);
+    head = (head->*L).qualified(*tail != head);
 
     if (empty())
       tail = &head;
 
-    (t->*link).p = NULL;
+    (t->*L).p = NULL;
 
-    assert(!(t->*link).bound());
+    assert(!(t->*L).bound());
     return t;
   }
 
@@ -76,7 +78,7 @@ public:
     }
 
     static
-    bool sorted(const intrusive_queue & q) {
+    bool sorted(const queue & q) {
       if (!q.empty())
         for (T* i = q.peek() ; i ; i = q.next(i))
           if (T* n = q.next(i))
@@ -87,9 +89,9 @@ public:
     }
 
     static
-    intrusive_queue & merge(intrusive_queue & q,
-                           intrusive_queue & foo,
-                           intrusive_queue & bar)
+    queue & merge(queue & q,
+                           queue & foo,
+                           queue & bar)
     {
       assert(sorted(foo));
       assert(sorted(bar));
@@ -112,14 +114,14 @@ public:
     }
 
     static
-    intrusive_queue & sort(intrusive_queue & q) {
+    queue & sort(queue & q) {
       if (q.empty() || q.peek() == q.last())
         return q;
 
       for (unsigned size = 1 ; ; size *= 2) {
-        intrusive_queue that;
+        queue that;
         while (!q.empty()) {
-          intrusive_queue foo, bar;
+          queue foo, bar;
 
           assert(!q.empty());
           foo.chain(q, size);
@@ -155,7 +157,7 @@ public:
 
   }; // sorter
 
-  intrusive_queue & chain(intrusive_queue & that, unsigned n) {
+  queue & chain(queue & that, unsigned n) {
     assert(this != &that);
     assert(!that.empty());
 
@@ -164,7 +166,7 @@ public:
 
     for (unsigned i = 0 ; i < n && tail != that.tail ; ++i) {
       self = *tail;
-      tail = &(self->*link).p;
+      tail = &(self->*L).p;
     }
 
     if (tail == that.tail) {
@@ -178,7 +180,7 @@ public:
     return *this;
   }
 
-  intrusive_queue & chain(intrusive_queue & that) {
+  queue & chain(queue & that) {
     assert(this != &that);
     assert(!that.empty());
     *tail = that.head;
@@ -194,8 +196,8 @@ public:
   T* iterator() const { return head; }
 
   T* next(const T* t) const {
-    assert((t->*link).bound());
-    return (t->*link).qualified(t != *tail);
+    assert((t->*L).bound());
+    return (t->*L).qualified(t != *tail);
   }
 
 private:
@@ -203,4 +205,6 @@ private:
   T ** tail;
 };
 
-#endif//INTRUSIVE_QUEUE
+} // namespace lite
+
+#endif//LITE__QUEUE

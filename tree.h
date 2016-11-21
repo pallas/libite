@@ -1,8 +1,8 @@
-#ifndef INTRUSIVE_TREE_H
-#define INTRUSIVE_TREE_H
+#ifndef LITE__TREE_H
+#define LITE__TREE_H
 
 #include <lace/do_not_copy.h>
-#include "intrusive_link.h"
+#include "link.h"
 
 #include <lace/compare.h>
 
@@ -10,13 +10,15 @@
 #include <cstddef>
 #include <algorithm>
 
+namespace lite {
+
 template <class X>
-class intrusive_tree_link {
+class tree_link {
 public:
-  typedef intrusive_tree_link type;
-  template <class T, typename intrusive_tree_link<T>::type T::*link,
+  typedef tree_link type;
+  template <class T, typename tree_link<T>::type T::*L,
             typename K, K T::*key, lace::compare_t (*C)(K const &, K const &)>
-    friend class intrusive_tree;
+    friend class tree;
 
   bool bound() const {
     assert(p.p || (!l.p && !r.p));
@@ -24,29 +26,29 @@ public:
   }
 
 private:
-  intrusive_link_tag<X> p;
-  intrusive_link<X> l, r;
+  link_tag<X> p;
+  link<X> l, r;
 };
 
-template <class T, typename intrusive_tree_link<T>::type T::*link,
+template <class T, typename tree_link<T>::type T::*L,
           typename K, K T::*key, lace::compare_t (*C)(K const &, K const &) = lace::compare<K> >
-class intrusive_tree : public lace::do_not_copy {
+class tree : public lace::do_not_copy {
 public:
-  intrusive_tree() : root_(NULL) { }
-  ~intrusive_tree() { assert(empty()); }
+  tree() : root_(NULL) { }
+  ~tree() { assert(empty()); }
 
   bool empty() const { return !root_; }
 
-  intrusive_tree & graft(T* t) {
+  tree & graft(T* t) {
     assert(valid());
     assert(!is_bound(t));
 
     T ** i = &root_;
     while (*i) {
-      (t->*link).p.p = *i;
+      (t->*L).p.p = *i;
       i = C(t->*key, (*i)->*key) < 0
-        ? &((*i)->*link).l.p
-        : &((*i)->*link).r.p
+        ? &((*i)->*L).l.p
+        : &((*i)->*L).r.p
         ;
     }
     *i = t;
@@ -322,7 +324,7 @@ public:
     return o;
   }
 
-  intrusive_tree & inosculate(intrusive_tree & that) {
+  tree & inosculate(tree & that) {
     assert(this != &that);
 
     T* i = that.root_;
@@ -344,7 +346,7 @@ public:
     return *this;
   }
 
-  void swap(intrusive_tree & that) {
+  void swap(tree & that) {
     using std::swap;
     swap(this->root_, that.root_);
   }
@@ -442,18 +444,18 @@ public:
 private:
   T * root_;
 
-  static bool is_red(const T* n) { return n && !(n->*link).p.tagged(); }
-  static bool is_black(const T* n) { return !n || (n->*link).p.tagged(); }
-  static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
+  static bool is_red(const T* n) { return n && !(n->*L).p.tagged(); }
+  static bool is_black(const T* n) { return !n || (n->*L).p.tagged(); }
+  static bool is_bound(const T* n) { assert(n); return (n->*L).bound(); }
 
-  static void toggle(T* n) { assert(n); (n->*link).p.toggle(); }
+  static void toggle(T* n) { assert(n); (n->*L).p.toggle(); }
 
   static void set_red(T* n) { assert(is_black(n)); toggle(n); }
   static void set_black(T* n) { assert(is_red(n)); toggle(n); }
 
-  static T* parent_(const T* n) { assert(n); return (n->*link).p.tagless(); }
-  static T* left_(const T* n) { assert(n); return (n->*link).l.p; }
-  static T* right_(const T* n) { assert(n); return (n->*link).r.p; }
+  static T* parent_(const T* n) { assert(n); return (n->*L).p.tagless(); }
+  static T* left_(const T* n) { assert(n); return (n->*L).l.p; }
+  static T* right_(const T* n) { assert(n); return (n->*L).r.p; }
 
   static T* eldest_(const T* n) {
     assert(n);
@@ -509,7 +511,7 @@ private:
     else // if (is_right(n))
       link_right(parent_(n), NULL);
 
-    (n->*link).p.p = NULL;
+    (n->*L).p.p = NULL;
   }
 
   void link_root(T* n) {
@@ -522,20 +524,20 @@ private:
     assert(p);
     if (c)
       link_parent(p, c);
-    (p->*link).l.p = c;
+    (p->*L).l.p = c;
   }
 
   void link_right(T* p, T* c) {
     assert(p);
     if (c)
       link_parent(p, c);
-    (p->*link).r.p = c;
+    (p->*L).r.p = c;
   }
 
   void link_parent(T* p, T* c) {
     assert(c);
     bool black = is_black(c);
-    (c->*link).p.p = p;
+    (c->*L).p.p = p;
     if (black)
       set_black(c);
   }
@@ -707,4 +709,6 @@ private:
 
 };
 
-#endif//INTRUSIVE_TREE
+} // namespace lite
+
+#endif//LITE__TREE

@@ -3,13 +3,13 @@
 
 #include <unistd.h>
 
-#include "intrusive_queue.h"
+#include "queue.h"
 
 struct node {
   long value;
   node(int v) : value(v) { }
 
-  intrusive_queue_link<node> queue_link;
+  lite::queue_link<node> queue_link;
 
   bool
   bound() const {
@@ -18,7 +18,7 @@ struct node {
         ;;
   }
 
-  typedef intrusive_queue<node, &node::queue_link> queue_t;
+  typedef lite::queue<node, &node::queue_link> queue_t;
   typedef queue_t::sorter<typeof(value), &node::value> sorter_t;
 };
 
