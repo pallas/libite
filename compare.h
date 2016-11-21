@@ -1,6 +1,7 @@
 #ifndef COMPARE_H
 #define COMPARE_H
 
+#include <string>
 #include <cwchar>
 #include <cstring>
 #include <stdint.h>
@@ -24,6 +25,11 @@ inline compare_t compare(const char * const &foo, const char * const &bar) {
 template <>
 inline compare_t compare(const wchar_t * const &foo, const wchar_t * const &bar) {
   return compare<int>(wcscmp(foo, bar), 0);
+}
+
+template <>
+inline compare_t compare(std::string const &foo, std::string const &bar) {
+  return compare<int>(foo.compare(bar), 0);
 }
 
 template <typename T>
