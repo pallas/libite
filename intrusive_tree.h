@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_TREE_H
 #define INTRUSIVE_TREE_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include "compare.h"
@@ -30,7 +30,7 @@ private:
 
 template <class T, typename intrusive_tree_link<T>::type T::*link,
           typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
-class intrusive_tree : public do_not_copy {
+class intrusive_tree : public lace::do_not_copy {
 public:
   intrusive_tree() : root_(NULL) { }
   ~intrusive_tree() { assert(empty()); }

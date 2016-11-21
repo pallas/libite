@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_TABLE_H
 #define INTRUSIVE_TABLE_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include "hash.h"
@@ -37,7 +37,7 @@ template <class T, typename intrusive_table_link<T>::type T::*link,
           typename K, K T::*key,
           compare_t (*C)(K const &, K const &) = compare<K>,
           hash_t (*H)(K const &) = hash<K> >
-class intrusive_table : public do_not_copy {
+class intrusive_table : public lace::do_not_copy {
 public:
   typedef intrusive_table_bucket<T> bucket_t;
 

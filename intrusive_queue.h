@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_QUEUE_H
 #define INTRUSIVE_QUEUE_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include "compare.h"
@@ -19,7 +19,7 @@ struct intrusive_queue_link : private intrusive_link<X> {
 };
 
 template <class T, typename intrusive_queue_link<T>::type T::*link>
-class intrusive_queue : public do_not_copy {
+class intrusive_queue : public lace::do_not_copy {
 public:
   intrusive_queue() : head(NULL), tail(&head) { }
   ~intrusive_queue() { assert(empty()); }

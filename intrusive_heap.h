@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_HEAP_H
 #define INTRUSIVE_HEAP_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include "compare.h"
@@ -30,7 +30,7 @@ private:
 
 template <class T, typename intrusive_heap_link<T>::type T::*link,
           typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
-class intrusive_heap : public do_not_copy {
+class intrusive_heap : public lace::do_not_copy {
 public:
 
   intrusive_heap() : root_(NULL) { }

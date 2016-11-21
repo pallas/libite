@@ -4,7 +4,7 @@ libite
 libite is a set of header-based intrusive containers in C++, originally part
 of [liboco](https://github.com/pallas/liboco) and created as an exercise for
 the author.  It is not meant as a replacement for other, similar template
-libraries.
+libraries.  Requires [libace](https://github.com/pallas/libace).
 
 The following container templates are currently implemented
 
@@ -21,12 +21,9 @@ The following container templates are currently implemented
 as well as the following utility templates
 
  * compare --- Generic less-than, equal, greater-than template.
- * do_not_copy --- Equivalent to boost::noncopyable.
  * intrusive_link --- Shared pointer wrapper, which asserts that links are
    removed from a container prior to object destruction.
  * hash --- Generic hash template, implemented as 64-bit FNV-1a.
- * singleton --- Singleton template, instantiates before main.
- * try --- Converts traditional error reporting to exceptions.
 
 and the following test programs
 

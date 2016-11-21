@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_STACK_H
 #define INTRUSIVE_STACK_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include <cassert>
@@ -17,7 +17,7 @@ struct intrusive_stack_link : private intrusive_link<X> {
 };
 
 template <class T, typename intrusive_stack_link<T>::type T::*link>
-class intrusive_stack : public do_not_copy {
+class intrusive_stack : public lace::do_not_copy {
 public:
   intrusive_stack() : head(const_cast<T*>(sentinel())) { }
   ~intrusive_stack() { assert(empty()); }

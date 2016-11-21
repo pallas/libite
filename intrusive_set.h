@@ -1,7 +1,7 @@
 #ifndef INTRUSIVE_SET_H
 #define INTRUSIVE_SET_H
 
-#include "do_not_copy.h"
+#include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
 #include <cassert>
@@ -25,7 +25,7 @@ private:
 };
 
 template <class T, typename intrusive_set_link<T>::type T::*link>
-class intrusive_set : public do_not_copy {
+class intrusive_set : public lace::do_not_copy {
 public:
   intrusive_set() : head(NULL), tail(&head), rank(0) { }
   ~intrusive_set() { assert(empty()); }
