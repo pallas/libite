@@ -25,7 +25,7 @@ struct node {
 
   void kill() { if (!bound()) delete this; }
 
-  typedef intrusive_heap<node, &node::heap_link, typeof(node::count), &node::count, reverse_compare<typeof(node::count)> > heap_t;
+  typedef intrusive_heap<node, &node::heap_link, typeof(node::count), &node::count, lace::reverse_compare<typeof(node::count)> > heap_t;
   typedef intrusive_table<node, &node::table_link, typeof(node::string), &node::string> table_t;
 };
 

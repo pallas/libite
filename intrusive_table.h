@@ -4,8 +4,8 @@
 #include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
-#include "hash.h"
-#include "compare.h"
+#include <lace/hash.h>
+#include <lace/compare.h>
 
 #include <cassert>
 #include <cstddef>
@@ -15,8 +15,8 @@ template <class X>
 struct intrusive_table_link : private intrusive_link<X> {
   typedef intrusive_table_link type;
   template <class T, typename intrusive_table_link<T>::type T::*link,
-            typename K, K T::*key, compare_t (*C)(K const &, K const &),
-            hash_t (*H)(K const &)>
+            typename K, K T::*key, lace::compare_t (*C)(K const &, K const &),
+            lace::hash_t (*H)(K const &)>
     friend class intrusive_table;
 
   bool bound() const { return intrusive_link<X>::p; }
@@ -25,8 +25,8 @@ struct intrusive_table_link : private intrusive_link<X> {
 template <class X>
 class intrusive_table_bucket : private intrusive_link<X> {
   template <class T, typename intrusive_table_link<T>::type T::*link,
-            typename K, K T::*key, compare_t (*C)(K const &, K const &),
-            hash_t (*H)(K const &)>
+            typename K, K T::*key, lace::compare_t (*C)(K const &, K const &),
+            lace::hash_t (*H)(K const &)>
     friend class intrusive_table;
 private:
   X* sentinel() { return reinterpret_cast<X*>(this); }
@@ -35,8 +35,8 @@ private:
 
 template <class T, typename intrusive_table_link<T>::type T::*link,
           typename K, K T::*key,
-          compare_t (*C)(K const &, K const &) = compare<K>,
-          hash_t (*H)(K const &) = hash<K> >
+          lace::compare_t (*C)(K const &, K const &) = lace::compare<K>,
+          lace::hash_t (*H)(K const &) = lace::hash<K> >
 class intrusive_table : public lace::do_not_copy {
 public:
   typedef intrusive_table_bucket<T> bucket_t;
@@ -180,8 +180,8 @@ private:
 
   static bool is_bound(const T* n) { assert(n); return (n->*link).bound(); }
 
-  hash_t index(const K & k) const { return H(k) % n_buckets_; }
-  hash_t index(const T* n) const { assert(n); return index(n->*key); }
+  lace::hash_t index(const K & k) const { return H(k) % n_buckets_; }
+  lace::hash_t index(const T* n) const { assert(n); return index(n->*key); }
 
   bucket_t* is_bucket(const T* n) const {
     assert(n);

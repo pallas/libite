@@ -4,7 +4,7 @@
 #include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
-#include "compare.h"
+#include <lace/compare.h>
 
 #include <cassert>
 #include <cstddef>
@@ -67,11 +67,11 @@ public:
   }
 
   template <typename K, K T::*key,
-            compare_t (*C)(K const &, K const &) = compare<K> >
+            lace::compare_t (*C)(K const &, K const &) = lace::compare<K> >
   struct sorter {
 
     static
-    compare_t compare(const T* foo, const T* bar) {
+    lace::compare_t compare(const T* foo, const T* bar) {
       return C(foo->*key, bar->*key);
     }
 

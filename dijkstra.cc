@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 
-#include "compare.h"
+#include <lace/compare.h>
 #include "intrusive_heap.h"
 #include "intrusive_queue.h"
 #include "intrusive_table.h"
@@ -100,7 +100,7 @@ main(int, char* argv[]) {
         expand(vertices, (load+1) * (n_vertices+1));
       vertices.set(f = new vertex_t(from.c_str()));
     }
-    if (!s || compare(f->id, s->id) < 0)
+    if (!s || lace::compare(f->id, s->id) < 0)
       s = f;
 
     vertex_t* t = vertices.get(to.c_str());
@@ -110,7 +110,7 @@ main(int, char* argv[]) {
         expand(vertices, (load+1) * (n_vertices+1));
       vertices.set(t = new vertex_t(to.c_str()));
     }
-    if (!s || compare(t->id, s->id) < 0)
+    if (!s || lace::compare(t->id, s->id) < 0)
       s = t;
 
     edge_t* e = new edge_t(f, t, cost);

@@ -4,7 +4,7 @@
 #include <lace/do_not_copy.h>
 #include "intrusive_link.h"
 
-#include "compare.h"
+#include <lace/compare.h>
 
 #include <cassert>
 #include <cstddef>
@@ -15,7 +15,7 @@ class intrusive_tree_link {
 public:
   typedef intrusive_tree_link type;
   template <class T, typename intrusive_tree_link<T>::type T::*link,
-            typename K, K T::*key, compare_t (*C)(K const &, K const &)>
+            typename K, K T::*key, lace::compare_t (*C)(K const &, K const &)>
     friend class intrusive_tree;
 
   bool bound() const {
@@ -29,7 +29,7 @@ private:
 };
 
 template <class T, typename intrusive_tree_link<T>::type T::*link,
-          typename K, K T::*key, compare_t (*C)(K const &, K const &) = compare<K> >
+          typename K, K T::*key, lace::compare_t (*C)(K const &, K const &) = lace::compare<K> >
 class intrusive_tree : public lace::do_not_copy {
 public:
   intrusive_tree() : root_(NULL) { }
