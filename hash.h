@@ -24,11 +24,11 @@ template <typename T> hash_t hash(T const &t) {
   return fnv_1a(reinterpret_cast<const unsigned char *>(&t), sizeof(t));
 }
 
-template <> hash_t hash(const char * const &t) {
+template <> inline hash_t hash(const char * const &t) {
   return fnv_1a(reinterpret_cast<const unsigned char *>(t), strlen(t));
 }
 
-template <> hash_t hash(std::string const &s) {
+template <> inline hash_t hash(std::string const &s) {
   return fnv_1a(reinterpret_cast<const unsigned char *>(s.data()), s.length());
 }
 

@@ -17,12 +17,12 @@ compare_t compare(T const &foo, T const &bar) {
 }
 
 template <>
-compare_t compare(const char * const &foo, const char * const &bar) {
+inline compare_t compare(const char * const &foo, const char * const &bar) {
   return compare<int>(strcmp(foo, bar), 0);
 }
 
 template <>
-compare_t compare(const wchar_t * const &foo, const wchar_t * const &bar) {
+inline compare_t compare(const wchar_t * const &foo, const wchar_t * const &bar) {
   return compare<int>(wcscmp(foo, bar), 0);
 }
 
