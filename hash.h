@@ -2,6 +2,7 @@
 #define HASH_H
 
 #include <string>
+#include <cwchar>
 #include <cstring>
 #include <stdint.h>
 
@@ -26,6 +27,10 @@ template <typename T> hash_t hash(T const &t) {
 
 template <> inline hash_t hash(const char * const &t) {
   return fnv_1a(reinterpret_cast<const unsigned char *>(t), strlen(t));
+}
+
+template <> inline hash_t hash(const wchar_t * const &t) {
+  return fnv_1a(reinterpret_cast<const unsigned char *>(t), wcslen(t) * sizeof(wchar_t));
 }
 
 template <> inline hash_t hash(std::string const &s) {
