@@ -116,6 +116,29 @@ main(int, char*[]) {
     heap.meld(h);
   }}
 
+  {{
+    node* z = new node(tree.max()->value + 1);
+    heap.inhume(z);
+    assert(z->bound());
+
+    z->value = tree.max()->value - 1;
+    heap.rehume(z);
+    assert(z->bound());
+
+    z->value = tree.min()->value + 1;
+    heap.rehume(z);
+    assert(z->bound());
+
+    z->value = tree.min()->value - 1;
+    heap.rehume(z);
+    assert(z->bound());
+
+    heap.exhume();
+    assert(!z->bound());
+
+    z->kill();
+  }}
+
   std::cout << "heap" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     node* x = heap.exhume();

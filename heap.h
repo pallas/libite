@@ -99,6 +99,27 @@ public:
     return t;
   }
 
+  bool rehume(T* t) {
+    assert(is_bound(t));
+
+    if (t == root_)
+      return false;
+
+    T* p = parent(t);
+    if (C(p->*key, t->*key) < 0)
+      return false;
+
+    orphan(t, p);
+
+    link_parent(NULL, t);
+    link_root(meld(root_, t));
+
+    assert(is_bound(t));
+    assert(valid());
+
+    return true;
+  }
+
   T* root() const {
     assert(!empty());
     return root_;
