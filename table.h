@@ -169,10 +169,10 @@ public:
 
   typedef void (T::*wiper_t)();
 
-  T* wipe(T* t, wiper_t w = NULL) {
+  T* wipe(T* t, wiper_t w) {
+    assert(w);
     T* n = next(t);
-    if (w)
-      (bus(t)->*w)();
+    (bus(t)->*w)();
     return n;
   }
 
