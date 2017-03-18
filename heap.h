@@ -91,24 +91,7 @@ public:
     if (t == root_)
       return exhume();
 
-    T* p = parent(t);
-    if (t == child(p)) {
-      take_child(p);
-    } else {
-      T* c = child(p);
-      while (t != sibling(c))
-        c = sibling(c);
-
-      take_sibling(c);
-
-      if (!sibling(c))
-        link_parent(p, c);
-    }
-
-    if (child(t))
-      make_child(p, pass(t));
-
-    unlink(t);
+    orphan(t);
 
     assert(!is_bound(t));
     assert(valid());
@@ -261,6 +244,33 @@ private:
     T* s = sibling(t);
     link_sibling(t, NULL);
     return s;
+  }
+
+  void orphan(T* t) {
+    assert(t != root_);
+    orphan(t, parent(t));
+  }
+
+  void orphan(T* c, T* p) {
+    assert(c != root_);
+    assert(p == parent(c));
+    if (c == child(p)) {
+      take_child(p);
+    } else {
+      T* s = child(p);
+      while (c != sibling(s))
+        s = sibling(s);
+
+      take_sibling(s);
+
+      if (!sibling(s))
+        link_parent(p, s);
+    }
+
+    if (child(c))
+      make_child(p, pass(c));
+
+    unlink(c);
   }
 
   bool valid(const T* t) const {
