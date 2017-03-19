@@ -120,6 +120,14 @@ public:
     return true;
   }
 
+  heap & churn(T* t) {
+    if (!is_bound(t))
+      return inhume(t);
+
+    rehume(t);
+    return *this;
+  }
+
   T* root() const {
     assert(!empty());
     return root_;
