@@ -134,11 +134,9 @@ main(int, char* argv[]) {
       assert(v == e->from);
       unsigned cost = e->from->cost + e->cost;
       if (!e->to->route || cost < e->to->cost) {
-        if (e->to->q_link.bound())
-          pq.sift(e->to);
         e->to->cost = cost;
         e->to->route = e->from;
-        pq.inhume(e->to);
+        pq.churn(e->to);
       }
     }
   }
