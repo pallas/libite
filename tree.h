@@ -356,10 +356,7 @@ public:
     return !empty() && eldest_(n) == root_;
   }
 
-  T* root() const {
-    assert(!empty());
-    return root_;
-  }
+  T* root() const { return root_; }
 
   T* parent(const T* n) const {
     assert(is_member(n));
