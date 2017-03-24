@@ -176,6 +176,12 @@ public:
     return n;
   }
 
+  table & polish(wiper_t w) {
+    assert(w);
+    for (T* n = iterator() ; n ; n = wipe(n, w)) { }
+    return *this;
+  }
+
 private:
   bucket_t * buckets_;
   size_t n_buckets_;
