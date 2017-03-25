@@ -346,6 +346,30 @@ public:
     return *this;
   }
 
+  typedef void (T::*axe_t)();
+
+  tree & fell(axe_t a) {
+    assert(a);
+
+    T* i = root_;
+    while (i) {
+      if (T* l = left_(i))
+        i = l;
+      else if (T* r = right_(i))
+        i = r;
+      else {
+        T* p = parent_(i);
+        unlink(i);
+        (i->*a)();
+        i = p;
+      }
+    }
+
+    assert(empty());
+
+    return *this;
+  }
+
   void swap(tree & that) {
     using std::swap;
     swap(this->root_, that.root_);
