@@ -6,6 +6,7 @@
 
 #include <lace/hash.h>
 #include <lace/compare.h>
+#include <lace/divider.h>
 
 #include <cassert>
 #include <cstddef>
@@ -44,7 +45,7 @@ public:
   typedef table_bucket<T> bucket_t;
 
   table(bucket_t bs[] = NULL, const size_t n = 0)
-    : buckets_(bs), n_buckets_(n)
+    : buckets_(bs), n_buckets_(n), divider_(n)
   { assert(buckets_ || 0 == n_buckets_); set_buckets(); }
 
   ~table() { assert(empty()); reset_buckets(); }
@@ -71,6 +72,7 @@ public:
 
     std::swap(buckets_, bs);
     std::swap(n_buckets_, n);
+    divider_.invert(n_buckets_);
 
     set_buckets();
     give_all(ts);
@@ -185,10 +187,11 @@ public:
 private:
   bucket_t * buckets_;
   size_t n_buckets_;
+  lace::divider divider_;
 
   static bool is_bound(const T* n) { assert(n); return (n->*L).bound(); }
 
-  lace::hash_t index(const K & k) const { return H(k) % n_buckets_; }
+  lace::hash_t index(const K & k) const { return divider_.modulo(H(k), n_buckets_); }
   lace::hash_t index(const T* n) const { assert(n); return index(n->*key); }
 
   bucket_t* is_bucket(const T* n) const {
