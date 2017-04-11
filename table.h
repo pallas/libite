@@ -135,6 +135,9 @@ public:
   }
 
   bool is_member(const T* t) const {
+    if (!n_buckets_)
+      return false;
+
     bucket_t & b = buckets_[index(t)];
 
     for (T ** c = &b.p ; *c != b.sentinel() ; c = &((*c)->*L).p)
