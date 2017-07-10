@@ -10,7 +10,7 @@ The following container templates are currently implemented
 
  * intrusive_heap --- Pairing heap implementing inhume & exhume.
  * intrusive_queue --- FIFO container implementing enqueue & dequeue, plus
-   merge sort. Replaces intrusive_order.
+   merge sort and in-place reverse. Replaces intrusive_order.
  * intrusive_set --- Disjoint set implementing join, archetype, & dissolve.
  * intrusive_stack --- LIFO container implementing push & pop.
  * intrusive_table --- Chained hash table implementing set, get, & bus; user

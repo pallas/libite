@@ -28,6 +28,7 @@ HEADERS := $(wildcard *.h)
 TESTS := \
 	test_intrusive \
 	test_associative \
+	test_queue \
 	#
 
 COMMON := \

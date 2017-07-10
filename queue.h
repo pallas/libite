@@ -157,6 +157,25 @@ public:
 
   }; // sorter
 
+  queue & reverse() {
+    if (empty())
+      return *this;
+
+    T** nt = &(head->*L).p;
+
+    T* p = head;
+    while (head != *tail) {
+      T* n = (head->*L).p;
+      (head->*L).p = p;
+      p = head;
+      head = n;
+    }
+    (head->*L).p = p;
+    tail = nt;
+
+    return *this;
+  }
+
   queue & chain(queue & that, unsigned n) {
     assert(this != &that);
     assert(!that.empty());
