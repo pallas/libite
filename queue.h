@@ -157,6 +157,9 @@ public:
 
   }; // sorter
 
+  template <typename K, K T::*key>
+  struct reverse_sorter : public sorter<K, key, lace::reverse_compare<K> > { };
+
   queue & reverse() {
     if (empty())
       return *this;
