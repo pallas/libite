@@ -25,7 +25,8 @@ struct node {
   typedef lite::queue<node, &node::forward_link> forward_queue_t;
   typedef lite::queue<node, &node::reverse_link> reverse_queue_t;
 
-  typedef forward_queue_t::sorter<typeof(value), &node::value, lace::compare<typeof(value)> > sorter_t;
+  typedef forward_queue_t::sorter<typeof(value), &node::value> forward_sorter_t;
+  typedef reverse_queue_t::reverse_sorter<typeof(value), &node::value> reverse_sorter_t;
 };
 
 int
@@ -42,12 +43,15 @@ main(int, char*[]) {
     forward.enqueue(x);
   }
 
-  node::sorter_t::sort(forward);
+  node::forward_sorter_t::sort(forward);
 
   for (node * n = forward.iterator() ; n ; n = forward.next(n))
     reverse.enqueue(n);
 
   reverse.reverse();
+  assert(node::reverse_sorter_t::sorted(reverse));
+  assert(forward.peek()->value == reverse.last()->value);
+  assert(forward.last()->value == reverse.peek()->value);
 
   std::cout << "forward" << '\t';
   while (!forward.empty()) {
