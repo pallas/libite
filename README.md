@@ -8,21 +8,21 @@ libraries.  Requires [libace](https://github.com/pallas/libace).
 
 The following container templates are currently implemented
 
- * intrusive_heap --- Pairing heap implementing inhume & exhume.
- * intrusive_queue --- FIFO container implementing enqueue & dequeue, plus
-   merge sort and in-place reverse. Replaces intrusive_order.
- * intrusive_set --- Disjoint set implementing join, archetype, & dissolve.
- * intrusive_stack --- LIFO container implementing push & pop.
- * intrusive_table --- Chained hash table implementing set, get, & bus; user
-   is responsible for providing hash buckets and performing rehashing.
- * intrusive_tree --- Red-black tree implementing graft & prune, as well as
-   find and efficient iteration via next & prev.
+ * heap --- Pairing heap implementing inhume & exhume.
+ * queue --- FIFO container implementing enqueue & dequeue, plus merge sort
+   and in-place reverse.  Replaces order.
+ * set --- Disjoint set implementing join, archetype, & dissolve.
+ * stack --- LIFO container implementing push & pop.
+ * table --- Chained hash table implementing set, get, & bus; user is
+   responsible for providing hash buckets and performing rehashing.
+ * tree --- Red-black tree implementing graft & prune, as well as find and
+   efficient iteration via next & prev.
 
 as well as the following utility templates
 
  * compare --- Generic less-than, equal, greater-than template.
- * intrusive_link --- Shared pointer wrapper, which asserts that links are
-   removed from a container prior to object destruction.
+ * link --- Shared pointer wrapper, which asserts that links are removed
+   from a container prior to object destruction.
  * hash --- Generic hash template, implemented as 64-bit FNV-1a.
 
 and the following test programs
@@ -43,9 +43,9 @@ and the following test programs
    one set per line.
  * treesort --- Read ints on std::cin, sort via tree, & write to std::cout.
 
-With assertions enabled, intrusive_heap and intrusive_tree are validated as
-pre- and post-conditions, which will wreck the algorithmic complexity; to
-disable, define NDEBUG.
+With assertions enabled, heap and tree are validated as pre- and
+post-conditions, which will wreck the algorithmic complexity; to disable,
+define NDEBUG.
 
 A small test suite is available and can be run via
 
