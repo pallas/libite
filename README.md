@@ -11,6 +11,7 @@ The following container templates are currently implemented
  * heap --- Pairing heap implementing inhume & exhume.
  * queue --- FIFO container implementing enqueue & dequeue, plus merge sort
    and in-place reverse.  Replaces order.
+ * list --- Doubly-linked list implementing enlist & delist.
  * set --- Disjoint set implementing join, archetype, & dissolve.
  * stack --- LIFO container implementing push & pop.
  * table --- Chained hash table implementing set, get, & bus; user is

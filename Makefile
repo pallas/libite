@@ -29,6 +29,7 @@ TESTS := \
 	test_intrusive \
 	test_associative \
 	test_queue \
+	test_list \
 	#
 
 COMMON := \
