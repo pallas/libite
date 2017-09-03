@@ -49,7 +49,15 @@ main(int, char*[]) {
     node* t = new node(n);
     for (node * n = list.last() ; n ; n = list.previous(n))
       list.enlist(t, n).delist(t);
-    t->kill();
+
+    std::cout << "ring" << '\t';
+    for (node * n = list.enlist(t).first() ; n != t ; n = list.prograde()) {
+      assert(n == list.first());
+      std::cout << ' ' << n->value;
+    }
+    std::cout << std::endl;
+
+    list.delist(t)->kill();
   }}
 
   node::sorter_t::sort(queue);

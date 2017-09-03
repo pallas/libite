@@ -92,6 +92,18 @@ public:
     return (t->*L).p.qualified(t != head);
   }
 
+  T* prograde() {
+    assert(!empty());
+    head = (head->*L).n.p;
+    return head;
+  }
+
+  T* retrograde() {
+    assert(!empty());
+    head = (head->*L).p.p;
+    return head;
+  }
+
 private:
   T * head;
 };
