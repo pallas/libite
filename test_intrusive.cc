@@ -139,6 +139,28 @@ main(int, char*[]) {
     z->kill();
   }}
 
+  {{
+    node* z = new node(tree.min()->value - 1);
+    heap.inhume(z);
+    assert(z->bound());
+
+    node* zz = new node(tree.min()->value - 2);
+    heap.inhume(zz);
+    assert(z->bound());
+
+    assert(z != heap.root());
+    z->value = tree.max()->value + 1;
+    heap.bury(z);
+    assert(z->bound());
+    heap.sift(z)->kill();
+
+    assert(zz == heap.root());
+    zz->value = tree.max()->value + 2;
+    heap.bury(zz);
+    assert(zz->bound());
+    heap.sift(zz)->kill();
+  }}
+
   std::cout << "heap" << '\t';
   for (node* i = tree.min() ; i ; i = tree.next(i)) {
     node* x = heap.exhume();

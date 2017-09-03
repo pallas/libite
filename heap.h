@@ -120,6 +120,27 @@ public:
     return true;
   }
 
+  heap & bury(T* t) {
+    assert(is_bound(t));
+
+    if (!child(t))
+      return *this;
+
+    T* cs = pass(t);
+
+    if (t == root_) {
+      link_parent(NULL, cs);
+      link_root(meld(root_, cs));
+    } else {
+      make_sibling(t, cs);
+    }
+
+    assert(is_bound(t));
+    assert(valid());
+
+    return *this;
+  }
+
   heap & churn(T* t) {
     if (!is_bound(t))
       return inhume(t);
@@ -230,6 +251,16 @@ private:
       link_parent(p, c);
     link_child(p, c);
     assert(parent(child(p)) == p);
+  }
+
+  void make_sibling(T* n, T* s) {
+    assert(n);
+    assert(s);
+    if (sibling(n))
+      link_sibling(s, take_siblings(n));
+    else
+      link_parent(parent(n), s);
+    link_sibling(n, s);
   }
 
   void unlink(T* n) {
