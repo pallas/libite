@@ -61,6 +61,13 @@ main(int, char*[]) {
         --entries;
         table.bus(heap.exhume())->kill();
       }
+      if (entries < k) {
+        ++entries;
+        node* x = new node(i);
+        x->weight = waterline + weight;
+        table.set(x);
+        heap.inhume(x);
+      }
     }
 
   }
