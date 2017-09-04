@@ -19,6 +19,7 @@ PROGRAMS := \
 	heapsort \
 	kruskal \
 	mergesort \
+	misra-gries \
 	tarjan \
 	treesort \
 	#
