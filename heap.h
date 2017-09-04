@@ -200,7 +200,6 @@ private:
 
   T* pass(T* t) {
     assert(child(t));
-    assert(!sibling(t));
 
     // pairing pass
     T* r = NULL;
