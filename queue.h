@@ -98,9 +98,9 @@ public:
 
       while (!foo.empty() && !bar.empty())
         if (compare(foo.peek(), bar.peek()) <= 0)
-          q.enqueue(foo.dequeue());
+          q.chain(foo, 1);
         else
-          q.enqueue(bar.dequeue());
+          q.chain(bar, 1);
 
       if (!foo.empty())
         q.chain(foo);
