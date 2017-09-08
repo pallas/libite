@@ -106,7 +106,7 @@ public:
       return false;
 
     T* p = parent(t);
-    if (C(p->*key, t->*key) < 0)
+    if (C(p->*key, t->*key) <= 0)
       return false;
 
     orphan(t, p);
