@@ -39,6 +39,11 @@ public:
 
   bool empty() const { return !root_; }
 
+  static
+  lace::compare_t compare(const T* foo, const T* bar) {
+    return C(foo->*key, bar->*key);
+  }
+
   tree & graft(T* t) {
     assert(valid());
     assert(!is_bound(t));
@@ -46,7 +51,7 @@ public:
     T ** i = &root_;
     while (*i) {
       (t->*L).p.p = *i;
-      i = C(t->*key, (*i)->*key) < 0
+      i = compare(t, *i) < 0
         ? &((*i)->*L).l.p
         : &((*i)->*L).r.p
         ;
@@ -296,7 +301,7 @@ public:
     assert(!is_bound(n));
     assert(!is_member(n));
 
-    assert(0 == C(o->*key, n->*key));
+    assert(0 == compare(o, n));
 
     assert(is_red(n));
     if (is_black(o)) {
@@ -710,9 +715,9 @@ private:
         return false;
     }
 
-    if (l && C(t->*key, l->*key) < 0)
+    if (l && compare(t, l) < 0)
       return false;
-    if (r && C(r->*key, t->*key) < 0)
+    if (r && compare(r, t) < 0)
       return false;
 
     return valid(l) && valid(r);

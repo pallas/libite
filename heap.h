@@ -40,6 +40,11 @@ public:
 
   bool empty() const { return !root_; }
 
+  static
+  lace::compare_t compare(const T* foo, const T* bar) {
+    return C(foo->*key, bar->*key);
+  }
+
   heap & inhume(T* t) {
     assert(valid());
     assert(!is_bound(t));
@@ -106,7 +111,7 @@ public:
       return false;
 
     T* p = parent(t);
-    if (C(p->*key, t->*key) <= 0)
+    if (compare(p, t) <= 0)
       return false;
 
     orphan(t, p);
@@ -128,7 +133,7 @@ public:
 
     T* cs = pass(t);
 
-    if (C(t->*key, cs->*key) <= 0) {
+    if (compare(t, cs) <= 0) {
        make_child(t, cs);
     } else if (t == root_) {
       link_parent(NULL, cs);
@@ -191,7 +196,7 @@ private:
     assert(bar);
 
     using std::swap;
-    if (C(bar->*key, foo->*key) < 0)
+    if (compare(bar, foo) < 0)
       swap(foo, bar);
 
     assert(!sibling(bar));
@@ -342,7 +347,7 @@ private:
       return false;
 
     for (T* c = child(t) ; c ; c = sibling(c))
-      if (C(c->*key, t->*key) < 0 || parent(c) != t || !valid(c))
+      if (compare(c, t) < 0 || parent(c) != t || !valid(c))
         return false;
 
     return valid(sibling(t));
