@@ -128,7 +128,9 @@ public:
 
     T* cs = pass(t);
 
-    if (t == root_) {
+    if (C(t->*key, cs->*key) <= 0) {
+       make_child(t, cs);
+    } else if (t == root_) {
       link_parent(NULL, cs);
       link_root(meld(root_, cs));
     } else {
