@@ -131,6 +131,9 @@ public:
     if (!child(t))
       return *this;
 
+    if (!sibling(child(t)) && compare(t, child(t)) <= 0)
+      return *this;
+
     T* cs = pass(t);
 
     if (compare(t, cs) <= 0) {
