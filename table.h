@@ -194,7 +194,9 @@ private:
 
   static bool is_bound(const T* n) { assert(n); return (n->*L).bound(); }
 
-  size_t index(const K & k) const { return divider_.modulo(H(k), n_buckets_); }
+  size_t modulo(lace::hash_t h) const { divider_.modulo(h, n_buckets_); }
+
+  size_t index(const K & k) const { return modulo(H(k)); }
   size_t index(const T* n) const { assert(n); return index(n->*key); }
 
   bucket_t* is_bucket(const T* n) const {
