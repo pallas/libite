@@ -135,7 +135,7 @@ public:
   }
 
   bool is_member(const T* t) const {
-    if (!n_buckets_)
+    if (!n_buckets_ || !is_bound(t))
       return false;
 
     bucket_t & b = buckets_[index(t)];
