@@ -460,7 +460,7 @@ public:
       case -1: n = left(n); break;
       case  0: return n;
       case  1: n = right(n); break;
-      default: assert(!"unreachable");
+      default: assert(!"unreachable"), __builtin_unreachable();
       }
     }
 

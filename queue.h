@@ -152,7 +152,7 @@ public:
         q.chain(that);
       }
 
-      assert(!"unreachable");
+      assert(!"unreachable"), __builtin_unreachable();
     }
 
   }; // sorter
