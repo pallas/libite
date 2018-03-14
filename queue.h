@@ -119,29 +119,15 @@ public:
 
     static
     queue & sort(queue & q) {
-      if (q.empty() || q.peek() == q.last())
-        return q;
-
-      for (unsigned stride = 1 ; ; stride *= 2) {
+      for (unsigned stride = 1 ; q.size() > stride ; stride *= 2) {
         queue that;
-        while (!q.empty()) {
+        while (q.size() > stride) {
           queue foo, bar;
 
           assert(!q.empty());
           foo.chain(q, stride);
           assert(!foo.empty());
           assert(sorted(foo));
-
-          if (q.empty()) {
-            if (!that.empty()) {
-              that.chain(foo);
-              break;
-            } else {
-              q.chain(foo);
-              assert(sorted(q));
-              return q;
-            }
-          }
 
           assert(!q.empty());
           bar.chain(q, stride);
@@ -152,11 +138,17 @@ public:
           assert(!that.empty());
         }
 
+        if (!q.empty()) {
+          assert(sorted(q));
+          that.chain(q);
+        }
+
         assert(!that.empty());
         q.chain(that);
       }
 
-      assert(!"unreachable"), __builtin_unreachable();
+      assert(sorted(q));
+      return q;
     }
 
   }; // sorter
