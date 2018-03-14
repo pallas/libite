@@ -23,10 +23,10 @@ struct queue_link : private link<X> {
 template <class T, typename queue_link<T>::type T::*L>
 class queue : public lace::do_not_copy {
 public:
-  queue() : head(NULL), tail(&head) { }
+  queue() : head(NULL), tail(&head), nodes(0) { }
   ~queue() { assert(empty()); }
 
-  bool empty() const { return !head; }
+  bool empty() const { assert(!nodes == !head); return !head; }
 
   queue & enqueue(T* t) {
     assert(!(t->*L).bound());
@@ -35,6 +35,8 @@ public:
     *tail = t;
     tail = &(t->*L).p;
     *tail = t;
+
+    ++nodes;
 
     assert((t->*L).bound());
     assert(!empty());
@@ -58,6 +60,8 @@ public:
     assert((t->*L).bound());
 
     head = (head->*L).qualified(*tail != head);
+
+    --nodes;
 
     if (empty())
       tail = &head;
@@ -194,9 +198,15 @@ public:
     if (tail == that.tail) {
       that.head = NULL;
       that.tail = &that.head;
+
+      nodes += that.nodes;
+      that.nodes = 0;
     } else {
       that.head = *tail;
       *tail = self;
+
+      nodes += n;
+      that.nodes -= n;
     }
 
     return *this;
@@ -205,11 +215,14 @@ public:
   queue & chain(queue & that) {
     assert(this != &that);
     assert(!that.empty());
+
     *tail = that.head;
     tail = that.tail;
+    nodes += that.nodes;
 
     that.head = NULL;
     that.tail = &that.head;
+    that.nodes = 0;
 
     assert(that.empty());
     return *this;
@@ -222,9 +235,12 @@ public:
     return (t->*L).qualified(t != *tail);
   }
 
+  unsigned size() const { return nodes; }
+
 private:
   T * head;
   T ** tail;
+  unsigned nodes;
 };
 
 } // namespace lite
