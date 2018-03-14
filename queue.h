@@ -118,13 +118,13 @@ public:
       if (q.empty() || q.peek() == q.last())
         return q;
 
-      for (unsigned size = 1 ; ; size *= 2) {
+      for (unsigned stride = 1 ; ; stride *= 2) {
         queue that;
         while (!q.empty()) {
           queue foo, bar;
 
           assert(!q.empty());
-          foo.chain(q, size);
+          foo.chain(q, stride);
           assert(!foo.empty());
           assert(sorted(foo));
 
@@ -140,7 +140,7 @@ public:
           }
 
           assert(!q.empty());
-          bar.chain(q, size);
+          bar.chain(q, stride);
           assert(!bar.empty());
           assert(sorted(bar));
 
