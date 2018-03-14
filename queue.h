@@ -187,27 +187,23 @@ public:
     assert(this != &that);
     assert(!that.empty());
 
+    if (that.size() <= n)
+      return chain(that);
+
     T* self = *tail;
     *tail = that.head;
 
-    for (unsigned i = 0 ; i < n && tail != that.tail ; ++i) {
+    for (unsigned i = 0 ; i < n ; ++i) {
+      assert(tail != that.tail);
       self = *tail;
       tail = &(self->*L).p;
     }
 
-    if (tail == that.tail) {
-      that.head = NULL;
-      that.tail = &that.head;
+    that.head = *tail;
+    *tail = self;
 
-      nodes += that.nodes;
-      that.nodes = 0;
-    } else {
-      that.head = *tail;
-      *tail = self;
-
-      nodes += n;
-      that.nodes -= n;
-    }
+    nodes += n;
+    that.nodes -= n;
 
     return *this;
   }
