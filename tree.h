@@ -426,12 +426,11 @@ public:
     if (T* r = right_(n))
       return leftest_(r);
 
-    do {
-      T* p = parent_(n);
-      if (is_left(n))
+    while (T* p = parent_(n)) {
+      if (n == left_(p))
         return p;
       n = p;
-    } while (!is_root(n));
+    }
 
     return NULL;
   }
@@ -442,12 +441,11 @@ public:
     if (T* r = left_(n))
       return rightest_(r);
 
-    do {
-      T* p = parent_(n);
-      if (is_right(n))
+    while (T* p = parent_(n)) {
+      if (n == right_(p))
         return p;
       n = p;
-    } while (!is_root(n));
+    }
 
     return NULL;
   }
