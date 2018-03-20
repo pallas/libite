@@ -19,6 +19,8 @@ struct node {
   }
 
   typedef lite::tree<node, &node::tree_link, typeof(node::value), &node::value> tree_t;
+
+  void axe() { if (!bound()) delete this; }
 };
 
 int
@@ -31,13 +33,10 @@ main(int, char*[]) {
       tree.graft(new node(i));
   }
 
-  while (!tree.empty()) {
-    node* x = tree.prune(tree.min());
-    std::cout << x->value << std::endl;
-    if (!x->bound())
-      delete x;
-  }
+  for (node* i = tree.min() ; i ; i = tree.next(i))
+    std::cout << i->value << std::endl;
 
+  tree.fell(&node::axe);
   return EXIT_SUCCESS;
 }
 
