@@ -82,11 +82,6 @@ struct vertex_t {
   }
 };
 
-void
-expand(vertex_t::table_t & vs, unsigned size) {
-  delete [] vs.rehash(new vertex_t::table_t::bucket_t[size], size);
-}
-
 int
 main(int, char* argv[]) {
   const unsigned load = 2;
@@ -109,7 +104,7 @@ main(int, char* argv[]) {
     if (!f) {
       ++n_vertices;
       if (vertices.buckets() < load * n_vertices)
-        expand(vertices, (load+1) * (n_vertices+1));
+        vertices.reseat((load+1) * (n_vertices+1));
       vertices.set(f = new vertex_t(from.c_str()));
     }
 
@@ -117,7 +112,7 @@ main(int, char* argv[]) {
     if (!t) {
       ++n_vertices;
       if (vertices.buckets() < load * n_vertices)
-        expand(vertices, (load+1) * (n_vertices+1));
+        vertices.reseat((load+1) * (n_vertices+1));
       vertices.set(t = new vertex_t(to.c_str()));
     }
 
@@ -140,7 +135,7 @@ main(int, char* argv[]) {
       delete &v->archetype()->dissolve();
   }
 
-  delete [] vertices.dehash();
+  vertices.reseat();
   return EXIT_SUCCESS;
 }
 
