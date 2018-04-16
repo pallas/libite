@@ -62,6 +62,17 @@ public:
 
   size_t buckets() const { return n_buckets_; }
 
+  bool reseat(size_t n = 0) {
+    if (n <= 0)
+      delete [] dehash();
+    else if (bucket_t *bs = new bucket_t[n])
+      delete [] rehash(bs, n);
+    else
+      return false;
+
+    return true;
+  }
+
   bucket_t* rehash(bucket_t bs[], size_t n) {
     assert(buckets_ || 0 == n_buckets_);
 
