@@ -692,6 +692,7 @@ private:
     }
   }
 
+#ifndef NDEBUG
   unsigned depth(const T* t) const {
     if (!t)
       return 1;
@@ -730,6 +731,7 @@ private:
       return false;
     return valid(root_);
   }
+#endif//!NDEBUG
 
 };
 

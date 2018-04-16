@@ -342,6 +342,7 @@ private:
     unlink(c);
   }
 
+#ifndef NDEBUG
   bool valid(const T* t) const {
     if (!t)
       return true;
@@ -363,6 +364,7 @@ private:
     assert(!sibling(root_));
     return valid(root_);
   }
+#endif//!NDEBUG
 
 };
 
