@@ -33,8 +33,10 @@ main(int, char*[]) {
       tree.graft(new node(i));
   }
 
-  for (node* i = tree.min() ; i ; i = tree.next(i))
-    std::cout << i->value << std::endl;
+
+  if (!tree.empty())
+    for (node* i = tree.min() ; i ; i = tree.next(i))
+      std::cout << i->value << std::endl;
 
   tree.fell(&node::axe);
   return EXIT_SUCCESS;
