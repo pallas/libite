@@ -127,6 +127,8 @@ main(int, char* argv[]) {
     edge_t::from_edges_t & fe = v->from_edges;
     for (edge_t* e = fe.iterator() ; e ; e = fe.next(e)) {
       assert(v == e->from);
+      if (e->to == e->from)
+        continue;
       unsigned cost = e->from->cost + e->cost;
       if (!e->to->route || cost < e->to->cost) {
         e->to->cost = cost;
