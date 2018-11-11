@@ -104,6 +104,8 @@ public:
 
     assert(is_bound(t));
     assert(!empty());
+
+    return *this;
   }
 
   T* bus(T* t) {
