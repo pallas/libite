@@ -8,7 +8,7 @@ ifeq ($(DEBUG),)
 	override DEBUG := -DNDEBUG -O2
 endif
 
-override LDFLAGS += -lstdc++
+override LDFLAGS += -Wl,--start-group -lstdc++
 override CFLAGS += $(DEBUG) -MD -MP
 override CXXFLAGS += $(DEBUG) -MD -MP
 
