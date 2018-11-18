@@ -4,6 +4,8 @@
 
 #include <unistd.h>
 
+#include <lace/singleton.h>
+#include <lace/random.h>
 #include "set.h"
 #include "tree.h"
 #include "heap.h"
@@ -42,7 +44,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  srand48(getpid());
+  lace::random & rng = lace::singleton<lace::random>().instance();
 
   node::tree_t tree;
   node::heap_t heap;
@@ -55,7 +57,7 @@ main(int, char*[]) {
     node::tree_t even, odd;
 
     for (unsigned i = 0 ; i < n ; ++i) {
-      node* x = new node(lrand48() % n);
+      node* x = new node(rng.l() % n);
 
       switch ((unsigned)x->value % 2) {
       case 0: even.graft(x); break;
@@ -71,7 +73,7 @@ main(int, char*[]) {
     tree.inosculate(even).inosculate(odd);
   }}
 
-  node* y = new node(lrand48() % n);
+  node* y = new node(rng.l() % n);
   tree.graft(y);
   heap.inhume(y);
   queue.enqueue(y);

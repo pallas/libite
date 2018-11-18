@@ -4,6 +4,8 @@
 
 #include <unistd.h>
 
+#include <lace/singleton.h>
+#include <lace/random.h>
 #include "heap.h"
 #include "table.h"
 
@@ -30,7 +32,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  srand48(getpid());
+  lace::random & rng = lace::singleton<lace::random>().instance();
 
   node::heap_t heap;
   node::table_t table;
@@ -39,12 +41,12 @@ main(int, char*[]) {
   node::table_t::bucket_t buckets[BUCKETS];
   table.rehash(buckets, BUCKETS/2);
 
-  node* v = new node(lrand48() % 1000);
+  node* v = new node(rng.l() % 1000);
   table.set(v);
 
   static const unsigned n = 16;
   for (unsigned i = 0 ; i < n ; ++i) {
-    node* x = new node(lrand48() % 1000);
+    node* x = new node(rng.l() % 1000);
     table.set(x);
     heap.inhume(x);
   }

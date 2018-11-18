@@ -4,6 +4,8 @@
 
 #include <unistd.h>
 
+#include <lace/singleton.h>
+#include <lace/random.h>
 #include "queue.h"
 #include "list.h"
 
@@ -32,7 +34,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  srand48(getpid());
+  lace::random & rng = lace::singleton<lace::random>().instance();
 
   node::queue_t queue;
   node::list_t list;
@@ -40,7 +42,7 @@ main(int, char*[]) {
   static const unsigned n = 16;
 
   for (unsigned i = 0 ; i < n ; ++i) {
-    node* x = new node(lrand48() % n);
+    node* x = new node(rng.l() % n);
     list.enlist(x);
     queue.enqueue(x);
   }
