@@ -57,9 +57,10 @@ main(int, char*[]) {
     for (unsigned i = 0 ; i < n ; ++i) {
       node* x = new node(lrand48() % n);
 
-      switch (x->value % 2) {
+      switch ((unsigned)x->value % 2) {
       case 0: even.graft(x); break;
       case 1: odd.graft(x); break;
+      default: assert(!"unreachable"), __builtin_unreachable();
       }
 
       queue.enqueue(x);
@@ -98,9 +99,10 @@ main(int, char*[]) {
     std::cout << ' ' << i->value;
     if (i == y)
         std::cout << '*';
-    switch (i->value % 2) {
+    switch ((unsigned)i->value % 2) {
     case 0: even.join(i); break;
     case 1: odd.join(i); break;
+    default: assert(!"unreachable"), __builtin_unreachable();
     }
   }
   std::cout << std::endl;
@@ -172,9 +174,10 @@ main(int, char*[]) {
         std::cout << '*';
 
     if (node::set_t::typed(x))
-      switch (x->value % 2) {
+      switch ((unsigned)x->value % 2) {
       case 0: assert(even.contains(x)); break;
       case 1: assert(odd.contains(x)); break;
+      default: assert(!"unreachable"), __builtin_unreachable();
       }
 
     x->kill();
