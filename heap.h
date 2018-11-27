@@ -173,7 +173,7 @@ public:
     do {
       if (T* s = sibling(n))
         return s;
-    } while (n = parent(n));
+    } while ((n = parent(n)));
 
     return NULL;
   }
