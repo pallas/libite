@@ -454,7 +454,7 @@ public:
     T* n = root();
 
     while (n) {
-      switch(C(k, n->*key)) {
+      switch(lace::compare<lace::compare_t>(C(k, n->*key), 0)) {
       case -1: n = left(n); break;
       case  0: return n;
       case  1: n = right(n); break;
