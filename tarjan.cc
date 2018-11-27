@@ -178,7 +178,7 @@ main(int, char* argv[]) {
             vertex_t* w = s->iterator();
 
             std::cout << w->id;
-            while (w = s->next(w))
+            while ((w = s->next(w)))
               std::cout << ' ' << w->id;
 
             std::cout << std::endl;
