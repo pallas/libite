@@ -10,22 +10,8 @@ endif()
 
 project(libite)
 add_library(libite INTERFACE)
-add_executable(argsort argsort.cc)
-add_executable(bagofwords bagofwords.cc)
-add_executable(dijkstra dijkstra.cc)
-add_executable(heapsort heapsort.cc)
-add_executable(kruskal kruskal.cc)
-add_executable(mergesort mergesort.cc)
-add_executable(misra-gries misra-gries.cc)
-add_executable(tarjan tarjan.cc)
-add_executable(treesort treesort.cc)
 
-file(GLOB header_files "*.h")
-install(FILES ${header_files}
-	DESTINATION "include/lite"
-	)
-
-install(TARGETS
+set(${PROJECT_NAME}_EXECUTABLES
 	argsort
 	bagofwords
 	dijkstra
@@ -35,15 +21,42 @@ install(TARGETS
 	misra-gries
 	tarjan
 	treesort
-	RUNTIME DESTINATION bin
 	)
 
+set(${PROJECT_NAME}_HEADERS
+	heap
+	link
+	list
+	queue
+	set
+	stack
+	table
+	tree
+	)
+
+set(${PROJECT_NAME}_TESTS
+	test_associative
+	test_intrusive
+	test_list
+	test_queue
+	)
+
+foreach(executable ${${PROJECT_NAME}_EXECUTABLES})
+	add_executable(${executable} ${executable}.cc)
+	install(TARGETS ${executable} RUNTIME DESTINATION bin)
+endforeach(executable)
+
+foreach(header ${${PROJECT_NAME}_HEADERS})
+	install(FILES ${header}.h DESTINATION "include/lite")
+endforeach(header)
+
 enable_testing()
-add_executable(test_associative test_associative.cc)
-add_test(NAME test_associative COMMAND $<TARGET_FILE:test_associative>)
-add_executable(test_intrusive test_intrusive.cc)
-add_test(NAME test_intrusive COMMAND $<TARGET_FILE:test_intrusive>)
-add_executable(test_list test_list.cc)
-add_test(NAME test_list COMMAND $<TARGET_FILE:test_list>)
-add_executable(test_queue test_queue.cc)
-add_test(NAME test_queue COMMAND $<TARGET_FILE:test_queue>)
+add_custom_target(all_tests)
+foreach(test ${${PROJECT_NAME}_TESTS})
+	add_executable(${test} EXCLUDE_FROM_ALL ${test}.cc)
+	add_test(NAME ${test} COMMAND $<TARGET_FILE:${test}>)
+	add_dependencies(all_tests ${test})
+endforeach(test)
+build_command(CTEST_CUSTOM_PRE_TEST TARGET all_tests)
+string(CONFIGURE \"@CTEST_CUSTOM_PRE_TEST@\" CTEST_CUSTOM_PRE_TEST_QUOTED ESCAPE_QUOTES)
+file(WRITE "${CMAKE_BINARY_DIR}/CTestCustom.cmake" "set(CTEST_CUSTOM_PRE_TEST ${CTEST_CUSTOM_PRE_TEST_QUOTED})" "\n")
