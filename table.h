@@ -187,15 +187,15 @@ public:
 
   typedef void (T::*wiper_t)();
 
-  T* wipe(T* t, wiper_t w) {
-    assert(w);
+  T* wipe(T* t, const wiper_t w = NULL) {
     T* n = next(t);
-    (bus(t)->*w)();
+    bus(t);
+    if (w)
+      (t->*w)();
     return n;
   }
 
-  table & polish(wiper_t w) {
-    assert(w);
+  table & polish(const wiper_t w = NULL) {
     for (T* n = iterator() ; n ; n = wipe(n, w)) { }
     return *this;
   }

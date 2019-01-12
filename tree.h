@@ -353,9 +353,7 @@ public:
 
   typedef void (T::*axe_t)();
 
-  tree & fell(axe_t a) {
-    assert(a);
-
+  tree & fell(const axe_t a = NULL) {
     T* i = root_;
     while (i) {
       if (T* l = left_(i))
@@ -365,7 +363,8 @@ public:
       else {
         T* p = parent_(i);
         unlink(i);
-        (i->*a)();
+        if (a)
+          (i->*a)();
         i = p;
       }
     }
