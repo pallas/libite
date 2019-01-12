@@ -30,7 +30,10 @@ main(int, char*[]) {
     for (node* i = tree.min() ; i ; i = tree.next(i))
       std::cout << i->value << std::endl;
 
+#ifndef NDEBUG
   tree.fell();
+#endif
+
   return EXIT_SUCCESS;
 }
 
