@@ -109,7 +109,7 @@ public:
 
   typedef void (T::*dissolver_t)();
 
-  set & dissolve(dissolver_t d = NULL) {
+  set & dissolve(const dissolver_t d = NULL) {
     while (T* t = head) {
       assert(typed(t));
       head = (t->*L).n.qualified(t != *tail);
