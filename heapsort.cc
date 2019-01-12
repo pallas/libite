@@ -6,7 +6,7 @@
 #include "heap.h"
 
 struct node {
-  long value;
+  int value;
   node(int v) : value(v) { }
 
   lite::heap_link<node> heap_link;

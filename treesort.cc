@@ -6,7 +6,7 @@
 #include "tree.h"
 
 struct node {
-  long value;
+  int value;
   node(int v) : value(v) { }
 
   lite::tree_link<node> tree_link;

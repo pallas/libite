@@ -6,7 +6,7 @@
 #include "queue.h"
 
 struct node {
-  long value;
+  int value;
   node(int v) : value(v) { }
 
   lite::queue_link<node> queue_link;
