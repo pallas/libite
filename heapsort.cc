@@ -20,6 +20,7 @@ main(int, char*[]) {
   lace::haystack h;
   node::heap_t heap;
 
+  h.alignment_mask() = alignof(node) - 1;
   while (std::cin) {
     int i;
     if ((std::cin >> i).good())

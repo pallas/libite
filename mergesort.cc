@@ -22,6 +22,7 @@ main(int, char*[]) {
   lace::haystack h;
   node::queue_t queue;
 
+  h.alignment_mask() = alignof(node) - 1;
   while (std::cin) {
     int i;
     if ((std::cin >> i).good())
