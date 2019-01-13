@@ -64,12 +64,11 @@ string(CONFIGURE \"@CTEST_CUSTOM_PRE_TEST@\" CTEST_CUSTOM_PRE_TEST_QUOTED ESCAPE
 file(WRITE "${CMAKE_BINARY_DIR}/CTestCustom.cmake" "set(CTEST_CUSTOM_PRE_TEST ${CTEST_CUSTOM_PRE_TEST_QUOTED})" "\n")
 
 foreach(sorter heapsort mergesort treesort)
-	add_test(NAME ${sorter} COMMAND sh -c "
-		[ -x '$<TARGET_FILE:${sorter}>' ] &&
+	add_test(NAME ${sorter} COMMAND bash -o pipefail -c "
 		seq 128 |
 		sort -R |
 		$<TARGET_FILE:${sorter}> |
-		sort -c -n
+		diff - <(seq 128)
 	")
 	add_dependencies(all_tests ${sorter})
 endforeach(sorter)
