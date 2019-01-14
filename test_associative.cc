@@ -32,7 +32,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  lace::random & rng = lace::singleton<lace::random>().instance();
+  lace::random & rng = lace::singleton<lace::random>::instance();
 
   node::heap_t heap;
   node::table_t table;

@@ -44,7 +44,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  lace::random & rng = lace::singleton<lace::random>().instance();
+  lace::random & rng = lace::singleton<lace::random>::instance();
 
   node::tree_t tree;
   node::heap_t heap;

@@ -34,7 +34,7 @@ struct node {
 
 int
 main(int, char*[]) {
-  lace::random & rng = lace::singleton<lace::random>().instance();
+  lace::random & rng = lace::singleton<lace::random>::instance();
 
   node::random_queue_t random;
   node::forward_queue_t forward;
